@@ -30,7 +30,7 @@
     
     
       
-      <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@10.7.2/styles/github-gist.min.css" />
+      <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@10.7.2/styles/atom-one-dark.min.css" />
     
   
 
@@ -226,7 +226,7 @@
 </nav>
 
     <div class="banner" id="banner" parallax=true
-         style="background: url('/img/abg/default.jpg') no-repeat center center;
+         style="background: url('/img/micro/banner.jpg') no-repeat center center;
            background-size: cover;">
       <div class="full-bg-img">
         <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
@@ -296,14 +296,17 @@
             <h1 style="display: none">微服务概述</h1>
             
             <div class="markdown-body">
-              <h1 id="微服务概述"><a href="#微服务概述" class="headerlink" title="微服务概述"></a>微服务概述</h1><h2 id="单体应用的缺点"><a href="#单体应用的缺点" class="headerlink" title="单体应用的缺点"></a>单体应用的缺点</h2><ul>
+              <h2 id="微服务起源"><a href="#微服务起源" class="headerlink" title="微服务起源"></a>微服务起源</h2><h3 id="单体应用的缺点"><a href="#单体应用的缺点" class="headerlink" title="单体应用的缺点"></a>单体应用的缺点</h3><ul>
 <li>单体应用复杂</li>
 <li>应用无法拓展</li>
 <li>可靠性低</li>
 <li>敏捷开发和快速部署无法完成</li>
 </ul>
 <p><em><strong>由此产生微服务</strong></em></p>
-<h2 id="微服务的演变"><a href="#微服务的演变" class="headerlink" title="微服务的演变"></a>微服务的演变</h2><p>微服务本质上是对面向架构的模式(SOA)的一种实践</p>
+<blockquote>
+<p>一切争端的开始</p>
+</blockquote>
+<h3 id="微服务的演变"><a href="#微服务的演变" class="headerlink" title="微服务的演变"></a>微服务的演变</h3><p>微服务本质上是对面向架构的模式(SOA)的一种实践</p>
 <p>微服务的特点:</p>
 <ul>
 <li>小即是美</li>
@@ -311,7 +314,7 @@
 <li>尽可能早创建原型</li>
 <li>可以执行比效率更重要</li>
 </ul>
-<h2 id="微服务的定义"><a href="#微服务的定义" class="headerlink" title="微服务的定义"></a>微服务的定义</h2><p>围绕业务功能构建的，服务关注单一业务，服务间采用轻量级的通信机制，可以全自动独立部署，可以使用不同的编程语言和数据存储技术。微服务架构通过业务拆分实现服务组件化，通过组件组合快速开发系统，业务单一的服务组件又可以独立部署，使得整个系统变得清晰灵活</p>
+<h3 id="微服务的定义"><a href="#微服务的定义" class="headerlink" title="微服务的定义"></a>微服务的定义</h3><p>围绕业务功能构建的，服务关注单一业务，服务间采用轻量级的通信机制，可以全自动独立部署，可以使用不同的编程语言和数据存储技术。微服务架构通过业务拆分实现服务组件化，通过组件组合快速开发系统，业务单一的服务组件又可以独立部署，使得整个系统变得清晰灵活</p>
 <p><em><strong>核心： 化繁为简 分而治之</strong></em></p>
 <p>优点：</p>
 <ul>
@@ -355,10 +358,10 @@
 <li>重试</li>
 <li>熔断</li>
 </ul>
-<h1 id="微服务设计"><a href="#微服务设计" class="headerlink" title="微服务设计"></a>微服务设计</h1><h2 id="API-GATEWAY"><a href="#API-GATEWAY" class="headerlink" title="API GATEWAY"></a>API GATEWAY</h2><blockquote>
+<h2 id="微服务设计"><a href="#微服务设计" class="headerlink" title="微服务设计"></a>微服务设计</h2><h3 id="API-GATEWAY"><a href="#API-GATEWAY" class="headerlink" title="API GATEWAY"></a>API GATEWAY</h3><blockquote>
 <p>backend for forntend BFF 可以认为是一种适配服务，将后端的微服务进行适配（主要包括聚合裁剪和格式适配等逻辑），向无线端设备暴露友好和统一的 API，方便无线设备接入访问后端服务</p>
 </blockquote>
-<h2 id="微服务的划分"><a href="#微服务的划分" class="headerlink" title="微服务的划分"></a>微服务的划分</h2><h2 id="微服务的安全"><a href="#微服务的安全" class="headerlink" title="微服务的安全"></a>微服务的安全</h2><h1 id="服务发现-amp-GRPC"><a href="#服务发现-amp-GRPC" class="headerlink" title="服务发现 &amp; GRPC"></a>服务发现 &amp; GRPC</h1><h2 id="GRPC"><a href="#GRPC" class="headerlink" title="GRPC"></a>GRPC</h2><ul>
+<h3 id="微服务的划分"><a href="#微服务的划分" class="headerlink" title="微服务的划分"></a>微服务的划分</h3><h3 id="微服务的安全"><a href="#微服务的安全" class="headerlink" title="微服务的安全"></a>微服务的安全</h3><h2 id="服务发现-amp-GRPC"><a href="#服务发现-amp-GRPC" class="headerlink" title="服务发现 &amp; GRPC"></a>服务发现 &amp; GRPC</h2><h3 id="GRPC"><a href="#GRPC" class="headerlink" title="GRPC"></a>GRPC</h3><ul>
 <li>多语言：语言中立，支持多种语言。</li>
 <li>轻量级、高性能：序列化支持 PB（Protocol Buffer）和 JSON，PB 是一种语言无关的高性能序列化框架</li>
 <li>可插拔</li>
@@ -371,7 +374,7 @@
 <li>元数据交换：常见的横切关注点，如认证或跟踪，依赖数据交换。</li>
 <li>标准化状态码：客户端通常以有限的方式响应 API 调用返回的错误 </li>
 </ul>
-<h2 id="服务发现"><a href="#服务发现" class="headerlink" title="服务发现"></a>服务发现</h2><ul>
+<h3 id="服务发现"><a href="#服务发现" class="headerlink" title="服务发现"></a>服务发现</h3><ul>
 <li><p>客户端发现：<br>直连 比服务端服务发现少一次网络跳转 Consumer 需要内置特定的服务发现客户端和发现逻辑</p>
 </li>
 <li><p>服务端发现：<br>Consumer 无需关注服务发现具体细节 只需知道服务的 DNS 域名即可 支持异构语言开发 需要基础设施支撑 多了一次网络跳转 可能有性能损失</p>
@@ -379,8 +382,8 @@
 <li><p>服务网格 service mesh:<br>通过sidercar 方式隐式的支持服务发现（待补充）</p>
 </li>
 </ul>
-<h1 id="多集群-amp-多租户"><a href="#多集群-amp-多租户" class="headerlink" title="多集群 &amp; 多租户"></a>多集群 &amp; 多租户</h1><h2 id="多集群"><a href="#多集群" class="headerlink" title="多集群"></a>多集群</h2><p>为了保证服务的可用性 已经对异常情况的预处理 使用多集群的方式提高系统的可用能力</p>
-<h2 id="多租户"><a href="#多租户" class="headerlink" title="多租户"></a>多租户</h2><p>在一个微服务架构中允许多系统共存是利用微服务稳定性以及模块化最有效的方式之一 这种方式一般被称为多租户（multi-tenancy）</p>
+<h2 id="多集群-amp-多租户"><a href="#多集群-amp-多租户" class="headerlink" title="多集群 &amp; 多租户"></a>多集群 &amp; 多租户</h2><h3 id="多集群"><a href="#多集群" class="headerlink" title="多集群"></a>多集群</h3><p>为了保证服务的可用性 已经对异常情况的预处理 使用多集群的方式提高系统的可用能力</p>
+<h3 id="多租户"><a href="#多租户" class="headerlink" title="多租户"></a>多租户</h3><p>在一个微服务架构中允许多系统共存是利用微服务稳定性以及模块化最有效的方式之一 这种方式一般被称为多租户（multi-tenancy）</p>
 <p>通过不同的租户区分不同的业务功能：</p>
 <ul>
 <li>红蓝发布</li>
@@ -388,7 +391,7 @@
 <li>模块测试</li>
 </ul>
 <blockquote>
-<p>多租户的概念较为模糊<br>思考？ 多租户中是怎样实现在上下文中传递多租户信息的？ </p>
+<p>多租户的概念较为模糊<br>思考？ 多租户中是怎样实现在上下文中传递多租户信息的?</p>
 </blockquote>
 
             </div>
