@@ -1,0 +1,598 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=&#34;auto&#34;>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/favicon.png">
+  <link rel="icon" href="/img/abg/favicon.jpg">
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="description" content="">
+  <meta name="author" content="John Doe">
+  <meta name="keywords" content="">
+  
+  <title>docker-compose搭建MySql主从和双主 - dogslee</title>
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@4.0.0/github-markdown.min.css" />
+  <link  rel="stylesheet" href="/lib/hint/hint.min.css" />
+
+  
+    
+    
+      
+      <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@10.7.2/styles/atom-one-dark.min.css" />
+    
+  
+
+  
+    <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css" />
+  
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_ba1fz6golrf.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_kmeydafke9r.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    var CONFIG = {"hostname":"dogslee.top","root":"/","version":"1.8.11","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null}},"search_path":"/local-search.xml"};
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand"
+       href="/">&nbsp;<strong>dogslee</strong>&nbsp;</a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" target="_self" role="button"
+                 data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+              <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                
+                  
+                  
+                  
+                  <a class="dropdown-item" href="/categories/%E6%9E%B6%E6%9E%84/">
+                    
+                    架构
+                  </a>
+                
+                  
+                  
+                  
+                  <a class="dropdown-item" href="/categories/%E8%AF%AD%E8%A8%80/">
+                    
+                    语言
+                  </a>
+                
+                  
+                  
+                  
+                  <a class="dropdown-item" href="/categories/%E7%BD%91%E7%BB%9C/">
+                    
+                    网络
+                  </a>
+                
+                  
+                  
+                  
+                  <a class="dropdown-item" href="/categories/%E5%AD%98%E5%82%A8/">
+                    
+                    存储
+                  </a>
+                
+                  
+                  
+                  
+                  <a class="dropdown-item" href="/categories/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/">
+                    
+                    设计模式
+                  </a>
+                
+                  
+                  
+                  
+                  <a class="dropdown-item" href="/categories/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/">
+                    
+                    操作系统
+                  </a>
+                
+                  
+                  
+                  
+                  <a class="dropdown-item" href="/categories/%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97/">
+                    
+                    消息队列
+                  </a>
+                
+                  
+                  
+                  
+                  <a class="dropdown-item" href="/categories/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/">
+                    
+                    数据结构
+                  </a>
+                
+              </div>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" data-toggle="modal" data-target="#modalSearch">&nbsp;<i
+                class="iconfont icon-search"></i>&nbsp;</a>
+          </li>
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="banner" id="banner" parallax=true
+         style="background: url('/img/mysql/banner-1.jpg') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="page-header text-center fade-in-up">
+            <span class="h2" id="subtitle" title="docker-compose搭建MySql主从和双主">
+              
+            </span>
+
+            
+              <div class="mt-3">
+  
+  
+    <span class="post-meta">
+      <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+      <time datetime="2021-08-23 16:03" pubdate>
+        2021年8月23日 下午
+      </time>
+    </span>
+  
+</div>
+
+<div class="mt-1">
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      3k 字
+    </span>
+  
+
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-clock-fill"></i>
+      
+      
+      42
+       分钟
+    </span>
+  
+
+  
+  
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">docker-compose搭建MySql主从和双主</h1>
+            
+            <div class="markdown-body">
+              <p class="note note-primary">相信mysql的binlog都不陌生</br>binlog的主要作用就是进行数据同步，今天我们从数据同步的角度搭一下mysql的主从/双主。</p>
+
+<h2 id="base"><a href="#base" class="headerlink" title="base"></a>base</h2><p>以下基于mysql5.7</p>
+<h2 id="简单了解下binlog"><a href="#简单了解下binlog" class="headerlink" title="简单了解下binlog"></a>简单了解下binlog</h2><ul>
+<li><p>binlog是记录所有数据库表结构变更（例如CREATE、ALTER TABLE…）以及表数据修改（INSERT、UPDATE、DELETE…）的二进制日志。</p>
+</li>
+<li><p>binlog日志包括两类文件：二进制日志索引文件（文件名后缀为.index）用于记录所有的二进制文件，二进制日志文件（文件名后缀为.00000*）记录数据库所有的DDL和DML(除了数据查询语句)语句事件。</p>
+</li>
+<li><p>binlog有三种格式：statement基于sql语句复制、row基于行数据变更的复制、mixed混合前两种格式的复制。</p>
+</li>
+</ul>
+<h2 id="搭建主从结构"><a href="#搭建主从结构" class="headerlink" title="搭建主从结构"></a>搭建主从结构</h2><p><img src="/img/mysql/mysql-m-s.png" srcset="/img/loading.gif" lazyload alt="mysql主从架构"></p>
+<h3 id="创建docker-compose"><a href="#创建docker-compose" class="headerlink" title="创建docker-compose"></a>创建docker-compose</h3><figure class="highlight yml"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs yml"><span class="hljs-attr">version:</span> <span class="hljs-string">&#x27;3.8&#x27;</span><br><span class="hljs-attr">services:</span><br>  <span class="hljs-attr">mysql-master:</span><br>    <span class="hljs-attr">container_name:</span> <span class="hljs-string">mysql-master</span> <br>    <span class="hljs-attr">image:</span> <span class="hljs-string">mysql:5.7.31</span><br>    <span class="hljs-attr">restart:</span> <span class="hljs-string">always</span><br>    <span class="hljs-attr">ports:</span><br>      <span class="hljs-bullet">-</span> <span class="hljs-number">13306</span><span class="hljs-string">:3306</span> <br>    <span class="hljs-attr">privileged:</span> <span class="hljs-literal">true</span><br>    <span class="hljs-attr">volumes:</span><br>      <span class="hljs-comment"># 这个只对mysql主从进行验证 没有持久化配置以及日志相关的映射</span><br>      <span class="hljs-bullet">-</span> <span class="hljs-string">$PWD/master/conf/my.cnf:/etc/mysql/my.cnf</span><br>    <span class="hljs-attr">environment:</span><br>      <span class="hljs-attr">MYSQL_ROOT_PASSWORD:</span> <span class="hljs-string">&quot;123456&quot;</span><br>    <span class="hljs-attr">command:</span> [<br>        <span class="hljs-string">&#x27;--character-set-server=utf8mb4&#x27;</span>,<br>        <span class="hljs-string">&#x27;--collation-server=utf8mb4_general_ci&#x27;</span>,<br>        <span class="hljs-string">&#x27;--max_connections=3000&#x27;</span><br>    ]<br>    <span class="hljs-attr">networks:</span><br>      <span class="hljs-bullet">-</span> <span class="hljs-string">myweb</span><br>      <br>  <span class="hljs-attr">mysql-slave:</span><br>    <span class="hljs-attr">container_name:</span> <span class="hljs-string">mysql-slave</span> <br>    <span class="hljs-attr">image:</span> <span class="hljs-string">mysql:5.7.31</span><br>    <span class="hljs-attr">restart:</span> <span class="hljs-string">always</span><br>    <span class="hljs-attr">ports:</span><br>      <span class="hljs-bullet">-</span> <span class="hljs-number">23306</span><span class="hljs-string">:3306</span> <br>    <span class="hljs-attr">privileged:</span> <span class="hljs-literal">true</span><br>    <span class="hljs-attr">volumes:</span><br>      <span class="hljs-comment"># 这个只对mysql主从进行验证 没有持久化配置以及日志相关的映射</span><br>      <span class="hljs-bullet">-</span> <span class="hljs-string">$PWD/slave/conf/my.cnf:/etc/mysql/my.cnf</span><br>    <span class="hljs-attr">environment:</span><br>      <span class="hljs-attr">MYSQL_ROOT_PASSWORD:</span> <span class="hljs-string">&quot;123456&quot;</span><br>    <span class="hljs-attr">command:</span> [<br>        <span class="hljs-string">&#x27;--character-set-server=utf8mb4&#x27;</span>,<br>        <span class="hljs-string">&#x27;--collation-server=utf8mb4_general_ci&#x27;</span>,<br>        <span class="hljs-string">&#x27;--max_connections=3000&#x27;</span><br>    ]<br>    <span class="hljs-attr">networks:</span><br>      <span class="hljs-bullet">-</span> <span class="hljs-string">myweb</span>    <br><br><span class="hljs-attr">networks:</span><br>  <span class="hljs-attr">myweb:</span><br>    <span class="hljs-attr">driver:</span> <span class="hljs-string">bridge</span><br></code></pre></div></td></tr></table></figure>
+
+<h3 id="创建配置文件"><a href="#创建配置文件" class="headerlink" title="创建配置文件"></a>创建配置文件</h3><h4 id="配置文件目录结构"><a href="#配置文件目录结构" class="headerlink" title="配置文件目录结构"></a>配置文件目录结构</h4><figure class="highlight bash"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs bash">[root@xxx MySQLM-S]<span class="hljs-comment"># tree</span><br>.<br>├── docker-compose.yaml<br>├── master<br>│   └── conf<br>│       └── my.cnf<br>└── slave<br>    └── conf<br>        └── my.cnf<br></code></pre></div></td></tr></table></figure>
+
+<h4 id="master-conf-my-cnf-配置文件"><a href="#master-conf-my-cnf-配置文件" class="headerlink" title="master/conf/my.cnf 配置文件"></a>master/conf/my.cnf 配置文件</h4><figure class="highlight bash"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs bash">[mysqld]<br><span class="hljs-comment"># [必须]服务器唯一ID，默认是1，一般取IP最后一段</span><br>server-id=1<br><br><br><span class="hljs-comment"># ###################################################</span><br><span class="hljs-comment"># 如果当前实例既做主库又做从库次选线必须开启</span><br><span class="hljs-comment"># log-slave-updates = true </span><br><br><span class="hljs-comment"># 自增长ID</span><br><span class="hljs-comment"># 特殊说明 当该实例为双主的架构时要特殊配置 以避免自增id冲突的问题</span><br><span class="hljs-comment"># auto_increment_offset = 1</span><br><span class="hljs-comment"># auto_increment_increment = 2  </span><br><span class="hljs-comment"># ####################################################</span><br><br><br><span class="hljs-comment"># [必须]启用二进制日志</span><br>log-bin=mysql-bin <br><br><span class="hljs-comment"># 复制过滤：也就是指定哪个数据库不用同步（mysql库一般不同步）</span><br>binlog-ignore-db=mysql<br><br><span class="hljs-comment"># 确保binlog日志写入后与硬盘同步</span><br>sync_binlog = 1<br><br><span class="hljs-comment"># 设置需要同步的数据库 binlog_do_db = 数据库名； </span><br><span class="hljs-comment"># 如果是多个同步库，就以此格式另写几行即可。</span><br><span class="hljs-comment"># 如果不指明对某个具体库同步，表示同步所有库。除了binlog-ignore-db设置的忽略的库</span><br><span class="hljs-comment"># binlog_do_db = test #需要同步test数据库。</span><br><br><span class="hljs-comment"># 设置需要同步的数据库，主服务器上不限定数据库，在从服务器上限定replicate-do-db = 数据库名；</span><br><span class="hljs-comment"># 如果不指明同步哪些库，就去掉这行，表示所有库的同步（除了ignore忽略的库）。</span><br><span class="hljs-comment"># replicate-do-db = test；</span><br><br><span class="hljs-comment"># 跳过所有的错误，继续执行复制操作</span><br>slave-skip-errors = all  <br></code></pre></div></td></tr></table></figure>
+
+<h4 id="slave-conf-my-cnf-配置文件"><a href="#slave-conf-my-cnf-配置文件" class="headerlink" title="slave/conf/my.cnf 配置文件"></a>slave/conf/my.cnf 配置文件</h4><figure class="highlight bash"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs bash">[mysqld]<br><span class="hljs-comment"># [必须]服务器唯一ID，默认是1，一般取IP最后一段  </span><br>server-id=2<br><br><br><span class="hljs-comment"># ###################################################</span><br><span class="hljs-comment"># 如果当前实例既做主库又做从库次选线必须开启</span><br><span class="hljs-comment"># log-slave-updates = true </span><br><br><span class="hljs-comment"># 自增长ID</span><br><span class="hljs-comment"># 特殊说明 当该实例为双主的架构时要特殊配置 以避免自增id冲突的问题</span><br><span class="hljs-comment"># auto_increment_offset = 2</span><br><span class="hljs-comment"># auto_increment_increment = 2  </span><br><span class="hljs-comment"># ####################################################</span><br><br><span class="hljs-comment"># [必须]启用二进制日志</span><br>log-bin=mysql-bin <br><br><span class="hljs-comment"># 复制过滤：也就是指定哪个数据库不用同步（mysql库一般不同步）</span><br>binlog-ignore-db=mysql<br><br><span class="hljs-comment"># 确保binlog日志写入后与硬盘同步</span><br><span class="hljs-comment"># sync_binlog = 1</span><br><br><span class="hljs-comment"># 设置需要同步的数据库 binlog_do_db = 数据库名； </span><br><span class="hljs-comment"># 如果是多个同步库，就以此格式另写几行即可。</span><br><span class="hljs-comment"># 如果不指明对某个具体库同步，表示同步所有库。除了binlog-ignore-db设置的忽略的库</span><br><span class="hljs-comment"># binlog_do_db = test #需要同步test数据库。</span><br><br><span class="hljs-comment"># 设置需要同步的数据库，主服务器上不限定数据库，在从服务器上限定replicate-do-db = 数据库名；</span><br><span class="hljs-comment"># 如果不指明同步哪些库，就去掉这行，表示所有库的同步（除了ignore忽略的库）。</span><br><span class="hljs-comment"># replicate-do-db = test；</span><br><br><span class="hljs-comment"># 跳过所有的错误，继续执行复制操作</span><br>slave-skip-errors = all <br></code></pre></div></td></tr></table></figure>
+
+<h3 id="启动docker-compose并配置主从关系"><a href="#启动docker-compose并配置主从关系" class="headerlink" title="启动docker-compose并配置主从关系"></a>启动docker-compose并配置主从关系</h3><h4 id="启动"><a href="#启动" class="headerlink" title="启动"></a>启动</h4><figure class="highlight bash"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs bash">docker-compose up -d <br></code></pre></div></td></tr></table></figure>
+
+<h4 id="进入master配置同步账号和权限"><a href="#进入master配置同步账号和权限" class="headerlink" title="进入master配置同步账号和权限"></a>进入master配置同步账号和权限</h4><figure class="highlight bash"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs bash">docker-compose <span class="hljs-built_in">exec</span> mysql-slave bash<br><br>mysql -uroot -p123455<br><br><span class="hljs-comment"># 查看配置的服务ID</span><br>mysql&gt; show variables like <span class="hljs-string">&#x27;%server_id%&#x27;</span>;<br>+----------------+-------+<br>| Variable_name  | Value |<br>+----------------+-------+<br>| server_id      | 1     |<br>| server_id_bits | 32    |<br>+----------------+-------+<br><br><span class="hljs-comment"># 看master信息 File 和 Position 从服务上要用</span><br>mysql&gt; show master status;<br>+------------------+----------+--------------+------------------+-------------------+<br>| File             | Position | Binlog_Do_DB | Binlog_Ignore_DB | Executed_Gtid_Set |<br>+------------------+----------+--------------+------------------+-------------------+<br>| mysql-bin.000004 |      154 |              | mysql            |                   |<br>+------------------+----------+--------------+------------------+-------------------+<br><br><span class="hljs-comment"># 创建同步账户并开启权限</span><br>mysql&gt; grant replication slave,replication client on *.* to <span class="hljs-string">&#x27;slave&#x27;</span>@<span class="hljs-string">&#x27;%&#x27;</span> identified by <span class="hljs-string">&quot;123456&quot;</span>;<br>mysql&gt; flush privileges;<br></code></pre></div></td></tr></table></figure>
+
+<h4 id="进入slave服务配置"><a href="#进入slave服务配置" class="headerlink" title="进入slave服务配置"></a>进入slave服务配置</h4><figure class="highlight bash"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs bash">docker-compose <span class="hljs-built_in">exec</span> docker-slave bash<br><br>mysql -uroot -p123456<br><br><span class="hljs-comment">#查看server_id是否生效</span><br>mysql&gt; show variables like <span class="hljs-string">&#x27;%server_id%&#x27;</span>;<br>+----------------+-------+<br>| Variable_name  | Value |<br>+----------------+-------+<br>| server_id      | 2     |<br>| server_id_bits | 32    |<br>+----------------+-------+<br><br><span class="hljs-comment"># 连接主mysql服务 master_log_file 和 master_log_pos的值要填写主master里查出来的值 注意这里使用的docker-compose 内部服务的端口和ip</span><br>mysql&gt; change master to master_host=<span class="hljs-string">&#x27;mysql-master&#x27;</span>,master_user=<span class="hljs-string">&#x27;slave&#x27;</span>,master_password=<span class="hljs-string">&#x27;123456&#x27;</span>,master_port=3306,master_log_file=<span class="hljs-string">&#x27;mysql-bin.000004&#x27;</span>, master_log_pos=154,master_connect_retry=30;<br><br><br><span class="hljs-comment"># 开启slave</span><br><br>mysql&gt; start slave;<br><br>mysql&gt; show slave status \G<br>*************************** 1. row ***************************<br>               Slave_IO_State: Waiting <span class="hljs-keyword">for</span> master to send event<br>                  Master_Host: mysql-master<br>                  Master_User: slave<br>                  Master_Port: 3306<br>                Connect_Retry: 30<br>              Master_Log_File: mysql-bin.000004<br>          Read_Master_Log_Pos: 778<br>               Relay_Log_File: af5556aff9be-relay-bin.000002<br>                Relay_Log_Pos: 944<br>        Relay_Master_Log_File: mysql-bin.000004<br>             Slave_IO_Running: Yes<br>            Slave_SQL_Running: Yes<br>              Replicate_Do_DB: <br>          Replicate_Ignore_DB: mysql<br>           Replicate_Do_Table: <br>       Replicate_Ignore_Table: <br>      Replicate_Wild_Do_Table: <br>  Replicate_Wild_Ignore_Table: <br>                   Last_Errno: 0<br>                   Last_Error: <br>                 Skip_Counter: 0<br>          Exec_Master_Log_Pos: 778<br>              Relay_Log_Space: 1158<br>              Until_Condition: None<br>               Until_Log_File: <br>                Until_Log_Pos: 0<br>           Master_SSL_Allowed: No<br>           Master_SSL_CA_File: <br>           Master_SSL_CA_Path: <br>              Master_SSL_Cert: <br>            Master_SSL_Cipher: <br>               Master_SSL_Key: <br>        Seconds_Behind_Master: 0<br>Master_SSL_Verify_Server_Cert: No<br>                Last_IO_Errno: 0<br>                Last_IO_Error: <br>               Last_SQL_Errno: 0<br>               Last_SQL_Error: <br>  Replicate_Ignore_Server_Ids: <br>             Master_Server_Id: 1<br>                  Master_UUID: 466c4a60-03f4-11ec-a1a1-0242ac160002<br>             Master_Info_File: /var/lib/mysql/master.info<br>                    SQL_Delay: 0<br>          SQL_Remaining_Delay: NULL<br>      Slave_SQL_Running_State: Slave has <span class="hljs-built_in">read</span> all relay <span class="hljs-built_in">log</span>; waiting <span class="hljs-keyword">for</span> more updates<br>           Master_Retry_Count: 86400<br>                  Master_Bind: <br>      Last_IO_Error_Timestamp: <br>     Last_SQL_Error_Timestamp: <br>               Master_SSL_Crl: <br>           Master_SSL_Crlpath: <br>           Retrieved_Gtid_Set: <br>            Executed_Gtid_Set: <br>                Auto_Position: 0<br>         Replicate_Rewrite_DB: <br>                 Channel_Name: <br>           Master_TLS_Version: <br><br></code></pre></div></td></tr></table></figure>
+
+<p class="note note-success"> 上面看到 Slave_IO_Running: Yes，Slave_SQL_Running: Yes 表示已经成功开启主从</p>
+
+<p>连接主mysql参数说明：</p>
+<p><strong>master_port</strong>：Master的端口号，指的是容器的端口号</p>
+<p><strong>master_user</strong>：用于数据同步的用户</p>
+<p><strong>master_password</strong>：用于同步的用户的密码</p>
+<p><strong>master_log_file</strong>：指定 Slave 从哪个日志文件开始复制数据，即上文中提到的 File 字段的值</p>
+<p><strong>master_log_pos</strong>：从哪个 Position 开始读，即上文中提到的 Position 字段的值</p>
+<p><strong>master_connect_retry</strong>：如果连接失败，重试的时间间隔，单位是秒，默认是60秒</p>
+<h2 id="搭建双主结构"><a href="#搭建双主结构" class="headerlink" title="搭建双主结构"></a>搭建双主结构</h2><p>通过上面主从结构我们可以我们可以大胆设想，要是两个数据库的实例都配置对方为master不就实现的双主么？事实却是如此：</p>
+<p>双主结构只需要将双方的配置文件注释掉的地方取消注释掉分别在两台服务器上创同步账号和配置</p>
+<h3 id="创建docker-compose文件（双主）"><a href="#创建docker-compose文件（双主）" class="headerlink" title="创建docker-compose文件（双主）"></a>创建docker-compose文件（双主）</h3><p>这里只更改了docker-compose中服务的名称</p>
+<figure class="highlight yaml"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs yaml"><span class="hljs-attr">version:</span> <span class="hljs-string">&#x27;3.8&#x27;</span><br><span class="hljs-attr">services:</span><br>  <span class="hljs-attr">mysql-m1:</span><br>    <span class="hljs-attr">container_name:</span> <span class="hljs-string">mysql-m1</span><br>    <span class="hljs-attr">image:</span> <span class="hljs-string">mysql:5.7.31</span><br>    <span class="hljs-attr">restart:</span> <span class="hljs-string">always</span><br>    <span class="hljs-attr">ports:</span><br>      <span class="hljs-bullet">-</span> <span class="hljs-number">13306</span><span class="hljs-string">:3306</span> <br>    <span class="hljs-attr">privileged:</span> <span class="hljs-literal">true</span><br>    <span class="hljs-attr">volumes:</span><br>      <span class="hljs-comment"># 这个只对mysql主从进行验证 没有持久化配置以及日志相关的映射</span><br>      <span class="hljs-bullet">-</span> <span class="hljs-string">$PWD/m1/conf/my.cnf:/etc/mysql/my.cnf</span><br>    <span class="hljs-attr">environment:</span><br>      <span class="hljs-attr">MYSQL_ROOT_PASSWORD:</span> <span class="hljs-string">&quot;123456&quot;</span><br>    <span class="hljs-attr">command:</span> [<br>        <span class="hljs-string">&#x27;--character-set-server=utf8mb4&#x27;</span>,<br>        <span class="hljs-string">&#x27;--collation-server=utf8mb4_general_ci&#x27;</span>,<br>        <span class="hljs-string">&#x27;--max_connections=3000&#x27;</span><br>    ]<br>    <span class="hljs-attr">networks:</span><br>      <span class="hljs-bullet">-</span> <span class="hljs-string">myweb</span><br>      <br>  <span class="hljs-attr">mysql-m2:</span><br>    <span class="hljs-attr">container_name:</span> <span class="hljs-string">mysql-m2</span> <br>    <span class="hljs-attr">image:</span> <span class="hljs-string">mysql:5.7.31</span><br>    <span class="hljs-attr">restart:</span> <span class="hljs-string">always</span><br>    <span class="hljs-attr">ports:</span><br>      <span class="hljs-bullet">-</span> <span class="hljs-number">23306</span><span class="hljs-string">:3306</span> <br>    <span class="hljs-attr">privileged:</span> <span class="hljs-literal">true</span><br>    <span class="hljs-attr">volumes:</span><br>      <span class="hljs-comment"># 这个只对mysql主从进行验证 没有持久化配置以及日志相关的映射</span><br>      <span class="hljs-bullet">-</span> <span class="hljs-string">$PWD/m2/conf/my.cnf:/etc/mysql/my.cnf</span><br>    <span class="hljs-attr">environment:</span><br>      <span class="hljs-attr">MYSQL_ROOT_PASSWORD:</span> <span class="hljs-string">&quot;123456&quot;</span><br>    <span class="hljs-attr">command:</span> [<br>        <span class="hljs-string">&#x27;--character-set-server=utf8mb4&#x27;</span>,<br>        <span class="hljs-string">&#x27;--collation-server=utf8mb4_general_ci&#x27;</span>,<br>        <span class="hljs-string">&#x27;--max_connections=3000&#x27;</span><br>    ]<br>    <span class="hljs-attr">networks:</span><br>      <span class="hljs-bullet">-</span> <span class="hljs-string">myweb</span>    <br><br><span class="hljs-attr">networks:</span><br>  <span class="hljs-attr">myweb:</span><br>    <span class="hljs-attr">driver:</span> <span class="hljs-string">bridge</span><br></code></pre></div></td></tr></table></figure>
+
+<h3 id="创建配置文件-双主"><a href="#创建配置文件-双主" class="headerlink" title="创建配置文件(双主)"></a>创建配置文件(双主)</h3><p>这里只是将主从中的配置中注释掉的服务添加上</p>
+<h4 id="配置文件目录结构（双主）"><a href="#配置文件目录结构（双主）" class="headerlink" title="配置文件目录结构（双主）"></a>配置文件目录结构（双主）</h4><figure class="highlight bash"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs bash">[root@xxx MySQLM-M]<span class="hljs-comment"># tree</span><br>.<br>├── docker-compose.yaml<br>├── m1<br>│   └── conf<br>│       └── my.cnf<br>└── m2<br>    └── conf<br>        └── my.cnf<br></code></pre></div></td></tr></table></figure>
+
+<h4 id="m1-conf-my-cnf"><a href="#m1-conf-my-cnf" class="headerlink" title="m1/conf/my.cnf"></a>m1/conf/my.cnf</h4><figure class="highlight bash"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs bash">[mysqld]<br><span class="hljs-comment"># [必须]服务器唯一ID，默认是1，一般取IP最后一段</span><br>server-id=1<br><br><br><span class="hljs-comment"># ###################################################</span><br><span class="hljs-comment"># 如果当前实例既做主库又做从库次选线必须开启</span><br>log-slave-updates = <span class="hljs-literal">true</span> <br><br><span class="hljs-comment"># 自增长ID</span><br><span class="hljs-comment"># 特殊说明 当该实例为双主的架构时要特殊配置 以避免自增id冲突的问题</span><br>auto_increment_offset = 1<br>auto_increment_increment = 2  <br><span class="hljs-comment"># ####################################################</span><br><br><br><span class="hljs-comment"># [必须]启用二进制日志</span><br>log-bin=mysql-bin <br><br><span class="hljs-comment"># 复制过滤：也就是指定哪个数据库不用同步（mysql库一般不同步）</span><br>binlog-ignore-db=mysql<br><br><span class="hljs-comment"># 确保binlog日志写入后与硬盘同步</span><br>sync_binlog = 1<br><br><span class="hljs-comment"># 设置需要同步的数据库 binlog_do_db = 数据库名； </span><br><span class="hljs-comment"># 如果是多个同步库，就以此格式另写几行即可。</span><br><span class="hljs-comment"># 如果不指明对某个具体库同步，表示同步所有库。除了binlog-ignore-db设置的忽略的库</span><br><span class="hljs-comment"># binlog_do_db = test #需要同步test数据库。</span><br><br><span class="hljs-comment"># 设置需要同步的数据库，主服务器上不限定数据库，在从服务器上限定replicate-do-db = 数据库名；</span><br><span class="hljs-comment"># 如果不指明同步哪些库，就去掉这行，表示所有库的同步（除了ignore忽略的库）。</span><br><span class="hljs-comment"># replicate-do-db = test；</span><br><br><span class="hljs-comment"># 跳过所有的错误，继续执行复制操作</span><br>slave-skip-errors = all  <br></code></pre></div></td></tr></table></figure>
+
+<h4 id="m2-conf-my-cnf"><a href="#m2-conf-my-cnf" class="headerlink" title="m2/conf/my.cnf"></a>m2/conf/my.cnf</h4><figure class="highlight bash"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs bash">[mysqld]<br><span class="hljs-comment"># [必须]服务器唯一ID，默认是1，一般取IP最后一段  </span><br>server-id=2<br><br><br><span class="hljs-comment"># ###################################################</span><br><span class="hljs-comment"># 如果当前实例既做主库又做从库次选线必须开启</span><br>log-slave-updates = <span class="hljs-literal">true</span> <br><br><span class="hljs-comment"># 自增长ID</span><br><span class="hljs-comment"># 特殊说明 当该实例为双主的架构时要特殊配置 以避免自增id冲突的问题</span><br>auto_increment_offset = 2<br>auto_increment_increment = 2  <br><span class="hljs-comment"># ####################################################</span><br><br><span class="hljs-comment"># [必须]启用二进制日志</span><br>log-bin=mysql-bin <br><br><span class="hljs-comment"># 复制过滤：也就是指定哪个数据库不用同步（mysql库一般不同步）</span><br>binlog-ignore-db=mysql<br><br><span class="hljs-comment"># 确保binlog日志写入后与硬盘同步</span><br>sync_binlog = 1<br><br><span class="hljs-comment"># 设置需要同步的数据库 binlog_do_db = 数据库名； </span><br><span class="hljs-comment"># 如果是多个同步库，就以此格式另写几行即可。</span><br><span class="hljs-comment"># 如果不指明对某个具体库同步，表示同步所有库。除了binlog-ignore-db设置的忽略的库</span><br><span class="hljs-comment"># binlog_do_db = test #需要同步test数据库。</span><br><br><span class="hljs-comment"># 设置需要同步的数据库，主服务器上不限定数据库，在从服务器上限定replicate-do-db = 数据库名；</span><br><span class="hljs-comment"># 如果不指明同步哪些库，就去掉这行，表示所有库的同步（除了ignore忽略的库）。</span><br><span class="hljs-comment"># replicate-do-db = test；</span><br><br><span class="hljs-comment"># 跳过所有的错误，继续执行复制操作</span><br>slave-skip-errors = all <br></code></pre></div></td></tr></table></figure>
+
+<h3 id="启动docker-compose并配置m1和m2的双主"><a href="#启动docker-compose并配置m1和m2的双主" class="headerlink" title="启动docker-compose并配置m1和m2的双主"></a>启动docker-compose并配置m1和m2的双主</h3><h4 id="启动（双主）"><a href="#启动（双主）" class="headerlink" title="启动（双主）"></a>启动（双主）</h4><figure class="highlight bash"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs bash">docker-compose up -d <br></code></pre></div></td></tr></table></figure>
+
+<p>进入m1和m2下执行下列命令来获取各自的master status 和同步账号</p>
+<p>m1:</p>
+<figure class="highlight bash"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs bash">docker-compose <span class="hljs-built_in">exec</span> mysql-m1 bash<br><br>mysql -uroot -p123456<br><br><span class="hljs-comment"># 查看m1 File和Position</span><br>mysql&gt; show master status;<br>+------------------+----------+--------------+------------------+-------------------+<br>| File             | Position | Binlog_Do_DB | Binlog_Ignore_DB | Executed_Gtid_Set |<br>+------------------+----------+--------------+------------------+-------------------+<br>| mysql-bin.000005 |      154 |              | mysql            |                   |<br>+------------------+----------+--------------+------------------+-------------------+<br><br><span class="hljs-comment"># 创建同步账号</span><br>mysql&gt; grant replication slave,replication client on *.* to <span class="hljs-string">&#x27;slave&#x27;</span>@<span class="hljs-string">&#x27;%&#x27;</span> identified by <span class="hljs-string">&quot;123456&quot;</span>;<br>mysql&gt; flush privileges;<br><br></code></pre></div></td></tr></table></figure>
+
+<p>m2:</p>
+<figure class="highlight bash"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs bash">docker-compose <span class="hljs-built_in">exec</span> mysql-m1 bash<br><br>mysql -uroot -p123456<br><br><span class="hljs-comment"># 查看m2 File和Position</span><br>mysql&gt; show master status;<br>+------------------+----------+--------------+------------------+-------------------+<br>| File             | Position | Binlog_Do_DB | Binlog_Ignore_DB | Executed_Gtid_Set |<br>+------------------+----------+--------------+------------------+-------------------+<br>| mysql-bin.000005 |      154 |              | mysql            |                   |<br>+------------------+----------+--------------+------------------+-------------------+<br><br><span class="hljs-comment"># 创建同步账号</span><br>mysql&gt; grant replication slave,replication client on *.* to <span class="hljs-string">&#x27;slave&#x27;</span>@<span class="hljs-string">&#x27;%&#x27;</span> identified by <span class="hljs-string">&quot;123456&quot;</span>;<br>mysql&gt; flush privileges;<br></code></pre></div></td></tr></table></figure>
+
+<p>m1:</p>
+<figure class="highlight bash"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs bash">mysql&gt; change master to master_host=<span class="hljs-string">&#x27;mysql-m2&#x27;</span>,master_user=<span class="hljs-string">&#x27;slave&#x27;</span>,master_password=<span class="hljs-string">&#x27;123456&#x27;</span>,master_port=3306,master_log_file=<span class="hljs-string">&#x27;mysql-bin.000005&#x27;</span>, master_log_pos=154,master_connect_retry=30;<br><br>mysql&gt; start slave;<br><br>mysql&gt; show slave status \G<br>*************************** 1. row ***************************<br>               Slave_IO_State: Waiting <span class="hljs-keyword">for</span> master to send event<br>                  Master_Host: mysql-m2<br>                  Master_User: slave<br>                  Master_Port: 3306<br>                Connect_Retry: 30<br>              Master_Log_File: mysql-bin.000005<br>          Read_Master_Log_Pos: 620<br>               Relay_Log_File: de7a84f1b7f1-relay-bin.000002<br>                Relay_Log_Pos: 786<br>        Relay_Master_Log_File: mysql-bin.000005<br>             Slave_IO_Running: Yes<br>            Slave_SQL_Running: Yes<br>              Replicate_Do_DB:<br>          Replicate_Ignore_DB:<br>           Replicate_Do_Table:<br>       Replicate_Ignore_Table:<br>      Replicate_Wild_Do_Table:<br>  Replicate_Wild_Ignore_Table:<br>                   Last_Errno: 0<br>                   Last_Error:<br>                 Skip_Counter: 0<br>          Exec_Master_Log_Pos: 620<br>              Relay_Log_Space: 1000<br>              Until_Condition: None<br>               Until_Log_File:<br>                Until_Log_Pos: 0<br>           Master_SSL_Allowed: No<br>           Master_SSL_CA_File:<br>           Master_SSL_CA_Path:<br>              Master_SSL_Cert:<br>            Master_SSL_Cipher:<br>               Master_SSL_Key:<br>        Seconds_Behind_Master: 0<br>Master_SSL_Verify_Server_Cert: No<br>                Last_IO_Errno: 0<br>                Last_IO_Error:<br>               Last_SQL_Errno: 0<br>               Last_SQL_Error:<br>  Replicate_Ignore_Server_Ids:<br>             Master_Server_Id: 2<br>                  Master_UUID: de8af5ce-0410-11ec-ab6d-0242ac170003<br>             Master_Info_File: /var/lib/mysql/master.info<br>                    SQL_Delay: 0<br>          SQL_Remaining_Delay: NULL<br>      Slave_SQL_Running_State: Slave has <span class="hljs-built_in">read</span> all relay <span class="hljs-built_in">log</span>; waiting <span class="hljs-keyword">for</span> more updates<br>           Master_Retry_Count: 86400<br>                  Master_Bind:<br>      Last_IO_Error_Timestamp:<br>     Last_SQL_Error_Timestamp:<br>               Master_SSL_Crl:<br>           Master_SSL_Crlpath:<br>           Retrieved_Gtid_Set:<br>            Executed_Gtid_Set:<br>                Auto_Position: 0<br>         Replicate_Rewrite_DB:<br>                 Channel_Name:<br>           Master_TLS_Version:<br><br></code></pre></div></td></tr></table></figure>
+
+<p>m2:</p>
+<figure class="highlight bash"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs bash">mysql&gt; change master to master_host=<span class="hljs-string">&#x27;mysql-m1&#x27;</span>,master_user=<span class="hljs-string">&#x27;slave&#x27;</span>,master_password=<span class="hljs-string">&#x27;123456&#x27;</span>,master_port=3306,master_log_file=<span class="hljs-string">&#x27;mysql-bin.000005&#x27;</span>, master_log_pos=154,master_connect_retry=30;<br><br>mysql&gt; start slave;<br><br>mysql&gt; show slave status \G<br>*************************** 1. row ***************************<br>               Slave_IO_State: Waiting <span class="hljs-keyword">for</span> master to send event<br>                  Master_Host: mysql-m1<br>                  Master_User: slave<br>                  Master_Port: 3306<br>                Connect_Retry: 30<br>              Master_Log_File: mysql-bin.000005<br>          Read_Master_Log_Pos: 1086<br>               Relay_Log_File: 65322be4d8a9-relay-bin.000002<br>                Relay_Log_Pos: 786<br>        Relay_Master_Log_File: mysql-bin.000005<br>             Slave_IO_Running: Yes<br>            Slave_SQL_Running: Yes<br>              Replicate_Do_DB:<br>          Replicate_Ignore_DB:<br>           Replicate_Do_Table:<br>       Replicate_Ignore_Table:<br>      Replicate_Wild_Do_Table:<br>  Replicate_Wild_Ignore_Table:<br>                   Last_Errno: 0<br>                   Last_Error:<br>                 Skip_Counter: 0<br>          Exec_Master_Log_Pos: 1086<br>              Relay_Log_Space: 1000<br>              Until_Condition: None<br>               Until_Log_File:<br>                Until_Log_Pos: 0<br>           Master_SSL_Allowed: No<br>           Master_SSL_CA_File:<br>           Master_SSL_CA_Path:<br>              Master_SSL_Cert:<br>            Master_SSL_Cipher:<br>               Master_SSL_Key:<br>        Seconds_Behind_Master: 0<br>Master_SSL_Verify_Server_Cert: No<br>                Last_IO_Errno: 0<br>                Last_IO_Error:<br>               Last_SQL_Errno: 0<br>               Last_SQL_Error:<br>  Replicate_Ignore_Server_Ids:<br>             Master_Server_Id: 1<br>                  Master_UUID: de898a82-0410-11ec-9fee-0242ac170002<br>             Master_Info_File: /var/lib/mysql/master.info<br>                    SQL_Delay: 0<br>          SQL_Remaining_Delay: NULL<br>      Slave_SQL_Running_State: Slave has <span class="hljs-built_in">read</span> all relay <span class="hljs-built_in">log</span>; waiting <span class="hljs-keyword">for</span> more updates<br>           Master_Retry_Count: 86400<br>                  Master_Bind:<br>      Last_IO_Error_Timestamp:<br>     Last_SQL_Error_Timestamp:<br>               Master_SSL_Crl:<br>           Master_SSL_Crlpath:<br>           Retrieved_Gtid_Set:<br>            Executed_Gtid_Set:<br>                Auto_Position: 0<br>         Replicate_Rewrite_DB:<br>                 Channel_Name:<br>           Master_TLS_Version:<br></code></pre></div></td></tr></table></figure>
+
+<p class="noet note-success">至此双主节点设置完成</p>
+
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>主从模式多用来进行读写分离</p>
+<p>双主模式多用来进行高可用</p>
+<p>更复杂的部署可能会部署多master和多slave并用keeplive保证统一访问的模式，这里没探究</p>
+
+            </div>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                  <div class="post-meta mr-3">
+                    <i class="iconfont icon-category"></i>
+                    
+                      <a class="hover-with-bg" href="/categories/%E5%AD%98%E5%82%A8/">存储</a>
+                    
+                  </div>
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tags/mysql/">mysql</a>
+                    
+                      <a class="hover-with-bg" href="/tags/%E9%AB%98%E5%8F%AF%E7%94%A8/">高可用</a>
+                    
+                      <a class="hover-with-bg" href="/tags/%E6%95%B0%E6%8D%AE%E5%90%8C%E6%AD%A5/">数据同步</a>
+                    
+                  </div>
+                
+              </div>
+              
+                <p class="note note-warning">
+                  
+                    本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-SA 4.0 协议</a> ，转载请注明出处！
+                  
+                </p>
+              
+              
+                <div class="post-prevnext">
+                  <article class="post-prev col-6">
+                    
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2021/08/18/%E5%BE%AE%E6%9C%8D%E5%8A%A1%E6%A6%82%E8%BF%B0/">
+                        <span class="hidden-mobile">微服务概述</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+              <!-- Comments -->
+              <article class="comments" id="comments" lazyload>
+                
+                  
+                
+                
+  <div id="gitalk-container"></div>
+  <script type="text/javascript">
+    Fluid.utils.loadComments('#gitalk-container', function() {
+      Fluid.utils.createCssLink('/css/gitalk.css')
+      Fluid.utils.createScript('https://cdn.jsdelivr.net/npm/gitalk@1.7.2/dist/gitalk.min.js', function() {
+        var options = Object.assign(
+          {"clientID":"049451ff5642182111cb","clientSecret":"1fe5374f3cf7671cc68ac7d36b13069cefc122a8","repo":"blog-comment","owner":"dogslee","admin":["dogslee"],"language":"zh-CN","labels":["Gitalk"],"perPage":5,"pagerDirection":"last","distractionFreeMode":false,"createIssueManually":true,"proxy":"https://cors-anywhere.azm.workers.dev/https://github.com/login/oauth/access_token"},
+          {
+            id: '700023e7910613f50670a60a159d8af5'
+          }
+        )
+        var gitalk = new Gitalk(options);
+        gitalk.render('gitalk-container');
+      });
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the comments</noscript>
+
+
+              </article>
+            
+          </article>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+
+    
+      <a id="scroll-top-button" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+
+    
+  </main>
+
+  <footer class="text-center mt-5 py-3">
+  <div class="footer-content">
+     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+  </div>
+  
+
+  
+
+  
+</footer>
+
+
+  <!-- SCRIPTS -->
+  
+  <script  src="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+<!-- Plugins -->
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+  
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/tocbot@4.12.3/dist/tocbot.min.js" ></script>
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js" ></script>
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/anchor-js@4.3.1/anchor.min.js" ></script>
+
+
+
+  <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2.0.8/dist/clipboard.min.js" ></script>
+
+
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/typed.js@2.0.12/lib/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var title = document.getElementById('subtitle').title;
+      
+      typing(title)
+      
+    })(window, document);
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- 主题的启动项 保持在最底部 -->
+<script  src="/js/boot.js" ></script>
+
+
+</body>
+</html>
