@@ -247,6 +247,61 @@
   <div class="row mx-auto index-card">
     
     
+    <article class="col-12 col-md-12 mx-auto index-info">
+      <h1 class="index-header">
+        
+        <a href="/2021/08/25/%E8%AE%BE%E7%BD%AEMySQL%E7%9A%84%E9%9A%94%E7%A6%BB%E7%BA%A7%E5%88%AB/" target="_self">
+          设置MySQL的隔离级别
+        </a>
+      </h1>
+
+      <p class="index-excerpt">
+        <a href="/2021/08/25/%E8%AE%BE%E7%BD%AEMySQL%E7%9A%84%E9%9A%94%E7%A6%BB%E7%BA%A7%E5%88%AB/" target="_self">
+          
+          
+            
+          
+          怎么查当前的隔离级别？MySQL数据库默认的存储引擎是支持事务的innodb,所以自然的就有默认的隔离级别--可重复读
+只有支持ACID的存储引擎才有对应的各种隔离级别
+
+在我们设置当前事务的隔离级别的时候我们首先要会查询我们的MMySQL的隔离级别是什么
+MySQL查询隔离级别的语句是：
+1234567mysql&gt; select @@global.tx_isolation,@@tx_iso
+        </a>
+      </p>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2021-08-25 23:00" pubdate>
+              2021-08-25
+            </time>
+          </div>
+        
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-category"></i>
+            
+              <a href="/categories/%E5%AD%98%E5%82%A8/">存储</a>
+            
+          </div>
+        
+        
+          <div class="post-meta">
+            <i class="iconfont icon-tags"></i>
+            
+              <a href="/tags/mysql/">mysql</a>
+            
+          </div>
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
       <div class="col-12 col-md-4 m-auto index-img">
         <a href="/2021/08/23/docker-compose%E6%90%AD%E5%BB%BAMySql%E4%B8%BB%E4%BB%8E%E5%92%8C%E5%8F%8C%E4%B8%BB/" target="_self">
           <img src="/img/mysql/mysql.png" srcset="/img/loading.gif" lazyload alt="docker-compose搭建MySql主从和双主">
