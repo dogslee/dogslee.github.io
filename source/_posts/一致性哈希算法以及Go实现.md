@@ -1,6 +1,12 @@
 ---
 title: 一致性哈希算法以及Go实现
+date: 2021-09-03 18:00:00
+index_img: /img/hash/index.jpeg
+banner_img: /img/hash/banner.jpg
+categories:
+  - 存储
 tags:
+  - mysql
 ---
 
 ## 什么是一致性哈希
