@@ -250,18 +250,22 @@
     <article class="col-12 col-md-12 mx-auto index-info">
       <h1 class="index-header">
         
-        <a href="/2021/08/25/MySQL%E4%BA%8B%E5%8A%A1%E7%9A%84%E9%9A%94%E7%A6%BB%E6%80%A7%E5%92%8C%E9%9A%94%E7%A6%BB%E7%BA%A7%E5%88%AB/" target="_self">
-          MySQL事务的隔离性和隔离级别
+        <a href="/2021/08/31/%E4%B8%80%E8%87%B4%E6%80%A7%E5%93%88%E5%B8%8C%E7%AE%97%E6%B3%95%E4%BB%A5%E5%8F%8AGo%E5%AE%9E%E7%8E%B0/" target="_self">
+          一致性哈希算法以及Go实现
         </a>
       </h1>
 
       <p class="index-excerpt">
-        <a href="/2021/08/25/MySQL%E4%BA%8B%E5%8A%A1%E7%9A%84%E9%9A%94%E7%A6%BB%E6%80%A7%E5%92%8C%E9%9A%94%E7%A6%BB%E7%BA%A7%E5%88%AB/" target="_self">
+        <a href="/2021/08/31/%E4%B8%80%E8%87%B4%E6%80%A7%E5%93%88%E5%B8%8C%E7%AE%97%E6%B3%95%E4%BB%A5%E5%8F%8AGo%E5%AE%9E%E7%8E%B0/" target="_self">
           
           
             
           
-          用人话说说啥是事务？事务怎么有这么多的隔离级别？MVCC是咋回事？穿针引线
+          什么是一致性哈希一致哈希 是一种特殊的哈希算法。在使用一致哈希算法后，哈希表槽位数（大小）的改变平均只需要对 K/n 个关键字重新映射，其中 K 是关键字的数量，n是槽位数量。然而在传统的哈希表中，添加或删除一个槽位的几乎需要对所有关键字进行重新映射。
+以上为维基百科中的介绍，很显然要想明白一致性哈希首先我们要先搞懂传统哈希
+传统哈希用例首先我们以一种简单的分布式缓存架构来阐述
+
+如图-1所示，我
         </a>
       </p>
 
@@ -269,7 +273,54 @@
         
           <div class="post-meta mr-3">
             <i class="iconfont icon-date"></i>
-            <time datetime="2021-08-25 17:51" pubdate>
+            <time datetime="2021-08-31 17:47" pubdate>
+              2021-08-31
+            </time>
+          </div>
+        
+        
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+      <div class="col-12 col-md-4 m-auto index-img">
+        <a href="/2021/08/25/%E8%AE%BE%E7%BD%AEMySQL%E7%9A%84%E9%9A%94%E7%A6%BB%E7%BA%A7%E5%88%AB/" target="_self">
+          <img src="/img/mysql/mysql.png" srcset="/img/loading.gif" lazyload alt="设置MySQL的隔离级别">
+        </a>
+      </div>
+    
+    <article class="col-12 col-md-8 mx-auto index-info">
+      <h1 class="index-header">
+        
+        <a href="/2021/08/25/%E8%AE%BE%E7%BD%AEMySQL%E7%9A%84%E9%9A%94%E7%A6%BB%E7%BA%A7%E5%88%AB/" target="_self">
+          设置MySQL的隔离级别
+        </a>
+      </h1>
+
+      <p class="index-excerpt">
+        <a href="/2021/08/25/%E8%AE%BE%E7%BD%AEMySQL%E7%9A%84%E9%9A%94%E7%A6%BB%E7%BA%A7%E5%88%AB/" target="_self">
+          
+          
+            
+          
+          怎么查当前的隔离级别？MySQL数据库默认的存储引擎是支持事务的innodb,所以自然的就有默认的隔离级别--可重复读
+只有支持ACID的存储引擎才有对应的各种隔离级别
+
+在我们设置当前事务的隔离级别的时候我们首先要会查询我们的MySQL的隔离级别是什么
+MySQL查询隔离级别的语句是：
+1234567mysql&gt; select @@global.tx_isolation,@@tx_isol
+        </a>
+      </p>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2021-08-25 23:00" pubdate>
               2021-08-25
             </time>
           </div>
@@ -287,10 +338,6 @@
             <i class="iconfont icon-tags"></i>
             
               <a href="/tags/mysql/">mysql</a>
-            
-              <a href="/tags/ACID/">ACID</a>
-            
-              <a href="/tags/mvcc/">mvcc</a>
             
           </div>
         
