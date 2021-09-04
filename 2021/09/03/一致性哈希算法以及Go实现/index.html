@@ -300,15 +300,15 @@
 <p>以上为维基百科中的介绍，很显然要想明白一致性哈希首先我们要先搞懂传统哈希</p>
 <h2 id="传统哈希用例"><a href="#传统哈希用例" class="headerlink" title="传统哈希用例"></a>传统哈希用例</h2><p>首先我们以一种简单的分布式缓存架构来阐述</p>
 <p><img src="/img/hash/redis-hash-cache.jpg" srcset="/img/loading.gif" lazyload alt="图-1"></p>
-<p>如图-1所示，我们有的时候后会使用redis对热点数据进行缓存进而缓解数据库的压力，理论上我们认为mysql的操作是高昂的。</p>
+<p>如图-1所示，我们有的时候后会使用redis对热点数据缓存进而缓解数据库的压力，理论上我们认为mysql的操作是高昂的。</p>
 <p class="note note-success">这里多个redis本质上是多个集群</p>
 
-<p>这个时候我们希望将热点数据均匀的打散的多个redis上，来降低单个redis集群为缓存造成节点访问过热的情况发生。简单的我们可以理解为将不同的数据转换唯一值key后它按照redis数量取模。假设有3台redis做缓存。计算公式如下：</p>
+<p>这个时候我们希望将热点数据均匀的打散到多个redis上，来降低单个redis集群为缓存造成节点访问过热的情况发生。简单的我们可以理解为将不同的数据转换唯一值后，按照redis数量取模。假设有3台redis做缓存。计算公式如下：</p>
 <figure class="highlight bash"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs bash">h=<span class="hljs-built_in">hash</span>(key)%3<br></code></pre></div></td></tr></table></figure>
 
-<p>我们把这3个redis对应编号，h的值就是这个数据应该落在的缓存redis的位置。这种方式就是传统的hash使用的一种，类似的在数据库分表对数据操作的时候也可以使用这种方式。</p>
-<p><strong>但是这种凡是是否完善呢？</strong></p>
-<p>很明显这种方式存在问题：当我们其中一个redis断电之或者新增一个那么对应的全部缓存对应的要全部改变位置，因为节点的数量发生改变了，仍然用之前的计算方法数据落点就会出现问题。为了解决这个问题一致性哈希就出现了。</p>
+<p>我们把这3个redis对应编号，h的值就是这个数据应该落在的缓存redis的位置。这就是传统的hash使用的一种，类似的在数据库分表对数据操作的时候也可以使用这种方式。</p>
+<p><strong>传统哈希存在什么问题？</strong></p>
+<p>很明显存在这种问题：当我们其中一个redis断电之或者新增一个那么对应的全部缓存对应的要全部改变位置，因为节点的数量发生改变了，仍然用之前的计算方法数据落点全部出错。为了解决这个问题一致性哈希就出现了。</p>
 <h2 id="一致性哈希原理"><a href="#一致性哈希原理" class="headerlink" title="一致性哈希原理"></a>一致性哈希原理</h2><p>一致性哈希将整个哈希值空间组织成一个虚拟的圆环，如假设某哈希函数 H 的值空间为 0-2^32-1（即哈希值是一个 32 位无符号整形），整个哈希空间环如下：</p>
 <p><img src="/img/hash/cricle-hash-1.jpg" srcset="/img/loading.gif" lazyload alt="图-2"></p>
 <p>接下来就是将我们的缓存对象哈希化放到这个环中，访问数据的时候数据key也是用同样的算法计算出哈希，通过环上顺时针转动知道遇到第一个存贮节点，这个存储节点就是数据的保存节点。如图-3所</p>
@@ -316,7 +316,7 @@
 <p>图-3中object1的key哈希之后为400000000顺时针转动知道遇到第一个存储对象node2所以object1保存的对象为node2。</p>
 <p class="note note-primary">一般的如果一个节点不可用则这个节点上的数据就会分配到相邻的节点上而其他key所在的位置不会变化。新增一个节点同理</p>
 
-<h2 id="一致性哈希引入虚拟节点解决分配不均问题"><a href="#一致性哈希引入虚拟节点解决分配不均问题" class="headerlink" title="一致性哈希引入虚拟节点解决分配不均问题"></a>一致性哈希引入虚拟节点解决分配不均问题</h2><p>想必大聪明的你已经看出来了。当存储节点较少或者节点分配本身就不均衡的情况下，一些key落入的数据节点必然会不均衡这个时候又会造成节点过热。为解决这个问题引入了虚拟节点。即一个真实节点对应了多个虚拟的节点如图-4所示：</p>
+<h2 id="一致性哈希引入虚拟节点解决分配不均问题"><a href="#一致性哈希引入虚拟节点解决分配不均问题" class="headerlink" title="一致性哈希引入虚拟节点解决分配不均问题"></a>一致性哈希引入虚拟节点解决分配不均问题</h2><p>想必大聪明的你已经看出来了。当存储节点较少或者节点分配本身就不均衡的情况下，一些key落入的数据节点必然会不均衡，这个时候又会造成节点过热。为解决这个问题引入了虚拟节点。即一个真实节点对应了多个虚拟的节点如图-4所示：</p>
 <p><img src="/img/hash/cricle-hash-3.png" srcset="/img/loading.gif" lazyload alt="图-4"></p>
 <p>图-4中的虚拟节点并不是真实的存储节点，而是按照一定规则批量生成的虚拟节点。这些虚拟节点都有一个对应的真实节点。</p>
 <h2 id="一致性哈希与其哈希算法对比"><a href="#一致性哈希与其哈希算法对比" class="headerlink" title="一致性哈希与其哈希算法对比"></a>一致性哈希与其哈希算法对比</h2><p>对于集群中缓存类数据key的节点分配问题，有这几种解决方法，简单的hash取模，槽映射，一致性hash。</p>
@@ -350,7 +350,11 @@
                   <div class="post-meta">
                     <i class="iconfont icon-tags"></i>
                     
-                      <a class="hover-with-bg" href="/tags/mysql/">mysql</a>
+                      <a class="hover-with-bg" href="/tags/%E7%BC%93%E5%AD%98/">缓存</a>
+                    
+                      <a class="hover-with-bg" href="/tags/hash/">hash</a>
+                    
+                      <a class="hover-with-bg" href="/tags/golang/">golang</a>
                     
                   </div>
                 
