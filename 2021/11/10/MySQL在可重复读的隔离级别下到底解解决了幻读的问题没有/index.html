@@ -1,0 +1,747 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=&#34;auto&#34;>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/favicon.png">
+  <link rel="icon" href="/img/abg/favicon.jpg">
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="description" content="">
+  <meta name="author" content="John Doe">
+  <meta name="keywords" content="">
+  
+  <title>MySQL在可重复读的隔离级别下到底解解决了幻读的问题没有? - dogslee</title>
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@4.0.0/github-markdown.min.css" />
+  <link  rel="stylesheet" href="/lib/hint/hint.min.css" />
+
+  
+    
+    
+      
+      <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@10.7.2/styles/atom-one-dark.min.css" />
+    
+  
+
+  
+    <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css" />
+  
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_ba1fz6golrf.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_kmeydafke9r.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    var CONFIG = {"hostname":"dogslee.top","root":"/","version":"1.8.11","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"baidu":null,"google":283901737,"gtag":"G-GZMLV0NWJN","tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null}},"search_path":"/local-search.xml"};
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand"
+       href="/">&nbsp;<strong>dogslee</strong>&nbsp;</a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" target="_self" role="button"
+                 data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+              <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                
+                  
+                  
+                  
+                  <a class="dropdown-item" href="/categories/%E6%9E%B6%E6%9E%84/">
+                    
+                    架构
+                  </a>
+                
+                  
+                  
+                  
+                  <a class="dropdown-item" href="/categories/%E8%AF%AD%E8%A8%80/">
+                    
+                    语言
+                  </a>
+                
+                  
+                  
+                  
+                  <a class="dropdown-item" href="/categories/%E7%BD%91%E7%BB%9C/">
+                    
+                    网络
+                  </a>
+                
+                  
+                  
+                  
+                  <a class="dropdown-item" href="/categories/%E5%AD%98%E5%82%A8/">
+                    
+                    存储
+                  </a>
+                
+                  
+                  
+                  
+                  <a class="dropdown-item" href="/categories/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/">
+                    
+                    设计模式
+                  </a>
+                
+                  
+                  
+                  
+                  <a class="dropdown-item" href="/categories/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/">
+                    
+                    操作系统
+                  </a>
+                
+                  
+                  
+                  
+                  <a class="dropdown-item" href="/categories/%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97/">
+                    
+                    消息队列
+                  </a>
+                
+                  
+                  
+                  
+                  <a class="dropdown-item" href="/categories/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/">
+                    
+                    数据结构
+                  </a>
+                
+              </div>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" data-toggle="modal" data-target="#modalSearch">&nbsp;<i
+                class="iconfont icon-search"></i>&nbsp;</a>
+          </li>
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="banner" id="banner" parallax=true
+         style="background: url('/img/abg/default.jpg') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="page-header text-center fade-in-up">
+            <span class="h2" id="subtitle" title="MySQL在可重复读的隔离级别下到底解解决了幻读的问题没有?">
+              
+            </span>
+
+            
+              <div class="mt-3">
+  
+  
+    <span class="post-meta">
+      <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+      <time datetime="2021-11-10 16:18" pubdate>
+        2021年11月10日 下午
+      </time>
+    </span>
+  
+</div>
+
+<div class="mt-1">
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      2.3k 字
+    </span>
+  
+
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-clock-fill"></i>
+      
+      
+      26
+       分钟
+    </span>
+  
+
+  
+  
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">MySQL在可重复读的隔离级别下到底解解决了幻读的问题没有?</h1>
+            
+            <div class="markdown-body">
+              <h2 id="RR幻读到底被解决了没？"><a href="#RR幻读到底被解决了没？" class="headerlink" title="RR幻读到底被解决了没？"></a>RR幻读到底被解决了没？</h2><p>做业务朋友对数据库的ACID多少都了解一些，这里面又尤其隔离性是讨论最多且最复杂的，说到隔离性就不得不说由于隔离产生的问题：</p>
+<ol>
+<li>脏读</li>
+<li>不可重复读</li>
+<li>幻读</li>
+</ol>
+<p>这里面争议最大的就数MySQL默认隔离级别RR是否解决了幻读的问题， 这篇文章就是以实操的角度来看这个问题，所谓光说不练假把式，透过现象看到事情的本质才是我们要做的</p>
+<blockquote>
+<p>先说结论:<br>MySQL在可重复读隔离级别下并没有解决幻读的问题。<br>MySQL读取数据有两种模式，分为快照读和当前读，在当前读下MySQL通过引入间隙锁（gap lock） 能避免幻读的出现。<br>当使用快照读的时候仍可能存在幻读的出现。</p>
+</blockquote>
+<p>可能了解一些MVCC的人就会说，你这说的不对，都是快照读了怎么可能读取到幻读的数据。其实这个问题在我不清楚MVCC细节的时候也有一样的疑问。 我们先看下面的实例。</p>
+<h2 id="出现幻读的实例"><a href="#出现幻读的实例" class="headerlink" title="出现幻读的实例"></a>出现幻读的实例</h2><p>数据库表结构：</p>
+<figure class="highlight sql"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs sql"><span class="hljs-keyword">CREATE</span> <span class="hljs-keyword">TABLE</span> `test` (<br>  `id` <span class="hljs-type">int</span>(<span class="hljs-number">11</span>) <span class="hljs-keyword">NOT</span> <span class="hljs-keyword">NULL</span>,<br>  `name` <span class="hljs-type">varchar</span>(<span class="hljs-number">32</span>) <span class="hljs-keyword">NOT</span> <span class="hljs-keyword">NULL</span> <span class="hljs-keyword">DEFAULT</span> <span class="hljs-string">&#x27;&#x27;</span>,<br>  `age` <span class="hljs-type">int</span>(<span class="hljs-number">11</span>) <span class="hljs-keyword">NOT</span> <span class="hljs-keyword">NULL</span> <span class="hljs-keyword">DEFAULT</span> <span class="hljs-string">&#x27;0&#x27;</span>,<br>  `sex` tinyint(<span class="hljs-number">2</span>) <span class="hljs-keyword">NOT</span> <span class="hljs-keyword">NULL</span> <span class="hljs-keyword">DEFAULT</span> <span class="hljs-string">&#x27;0&#x27;</span>,<br>  <span class="hljs-keyword">PRIMARY</span> KEY (`id`)<br>) ENGINE<span class="hljs-operator">=</span>InnoDB <span class="hljs-keyword">DEFAULT</span> CHARSET<span class="hljs-operator">=</span>utf8;<br><br><span class="hljs-comment">-- ----------------------------</span><br><span class="hljs-comment">-- Records of test</span><br><span class="hljs-comment">-- ----------------------------</span><br><span class="hljs-keyword">INSERT</span> <span class="hljs-keyword">INTO</span> `test` <span class="hljs-keyword">VALUES</span> (<span class="hljs-string">&#x27;1&#x27;</span>, <span class="hljs-string">&#x27;bob&#x27;</span>, <span class="hljs-string">&#x27;18&#x27;</span>, <span class="hljs-string">&#x27;1&#x27;</span>);<br></code></pre></div></td></tr></table></figure>
+
+<p>事务时序图：</p>
+<table>
+<thead>
+<tr>
+<th>时间</th>
+<th>事务A</th>
+<th>事务B</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>T1</td>
+<td>begin;</td>
+<td></td>
+</tr>
+<tr>
+<td>T2</td>
+<td>select * from test where id &gt;= 1;</td>
+<td>begin;</td>
+</tr>
+<tr>
+<td>T3</td>
+<td></td>
+<td>insert into test(id, name, age, sex) values(2, ‘lisa’, 18, 0);</td>
+</tr>
+<tr>
+<td>T4</td>
+<td></td>
+<td>commit;</td>
+</tr>
+<tr>
+<td>T5</td>
+<td>update test set age = 19 where id &gt;=1;</td>
+<td></td>
+</tr>
+<tr>
+<td>T6</td>
+<td>select * from test where id &gt;= 1;</td>
+<td></td>
+</tr>
+<tr>
+<td>T7</td>
+<td>commit;</td>
+<td></td>
+</tr>
+</tbody></table>
+<p>T2时刻获取结果：</p>
+<figure class="highlight sh"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs sh">mysql&gt; select * from <span class="hljs-built_in">test</span> <span class="hljs-built_in">where</span> id &gt;=1;<br>+----+------+-----+-----+<br>| id | name | age | sex |<br>+----+------+-----+-----+<br>|  1 | bob  |  18 |   1 |<br>+----+------+-----+-----+<br>1 row <span class="hljs-keyword">in</span> <span class="hljs-built_in">set</span> (0.00 sec)<br></code></pre></div></td></tr></table></figure>
+
+<p>T6时刻获取结果：</p>
+<figure class="highlight sh"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs sh">mysql&gt; select * from <span class="hljs-built_in">test</span> <span class="hljs-built_in">where</span> id &gt;= 1;<br>+----+------+-----+-----+<br>| id | name | age | sex |<br>+----+------+-----+-----+<br>|  1 | bob  |  19 |   1 |<br>|  2 | lisa |  19 |   0 |<br>+----+------+-----+-----+<br>2 rows <span class="hljs-keyword">in</span> <span class="hljs-built_in">set</span> (0.00 sec)<br></code></pre></div></td></tr></table></figure>
+
+<p>从上图中可以看出我们使用<strong>快照读</strong>在同一个事务的前后两次操作中查到了其他事务新插入的数据，满足幻读的概念。</p>
+<p>那么既然使用快照读了，为什呢还会出现这个问题嘞？</p>
+<h3 id="按照一般的隔离性分析"><a href="#按照一般的隔离性分析" class="headerlink" title="按照一般的隔离性分析"></a>按照一般的隔离性分析</h3><p>理想条件下，事务A获取一条数据然后更新这条数据，最后再次查询这条数据，都应该是对一条数据进行操作。</p>
+<h3 id="然而这并不是理想条件"><a href="#然而这并不是理想条件" class="headerlink" title="然而这并不是理想条件"></a>然而这并不是理想条件</h3><p>实际上事务A的T6时刻的查询，获得了事务B中新插入的数据，仔细看发现新插入的数据也被事务A中的update语句更新了。</p>
+<h3 id="造成幻读原因"><a href="#造成幻读原因" class="headerlink" title="造成幻读原因"></a>造成幻读原因</h3><ol>
+<li>更新语句是当前读，T5时刻的 update 语句执行之前会使用当前读获取最新的全部满足条件的数据进行操作，这就会导致更新语句查询到事务B在T3时刻新插入满足更新条件的数据。</li>
+<li>在可重复读隔离级别下使用MVCC无锁实现快照读，T6时刻由于MVCC的原理使得用户可以获取到当前事务更新的数据，也就是自己在T5时刻更新的新插入的数据，所以可以展示出第一次快照读中没有的数据。</li>
+</ol>
+<h3 id="尝试用当前读执行同样的事务"><a href="#尝试用当前读执行同样的事务" class="headerlink" title="尝试用当前读执行同样的事务"></a>尝试用当前读执行同样的事务</h3><p>事务时序图：</p>
+<table>
+<thead>
+<tr>
+<th>时间</th>
+<th>事务A</th>
+<th>事务B</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>T1</td>
+<td>begin;</td>
+<td></td>
+</tr>
+<tr>
+<td>T2</td>
+<td>select * from test where id &gt;= 1 for update ;</td>
+<td>begin;</td>
+</tr>
+<tr>
+<td>T3</td>
+<td></td>
+<td>insert into test(id, name, age, sex) values(2, ‘lisa’, 18, 0); <em><strong>(blocking)</strong></em></td>
+</tr>
+<tr>
+<td>T4</td>
+<td>update test set age = 19 where id &gt;=1;</td>
+<td></td>
+</tr>
+<tr>
+<td>T5</td>
+<td>select * from test where id &gt;= 1 for update;</td>
+<td></td>
+</tr>
+<tr>
+<td>T6</td>
+<td>commit;</td>
+<td></td>
+</tr>
+<tr>
+<td>T7</td>
+<td></td>
+<td>commit;</td>
+</tr>
+</tbody></table>
+<p>对比快照读T3时刻插入数据将被阻塞， 这是因为RR下当前读引入了间隙锁的概念。</p>
+<p>查询条件 where id &gt;= 1 不光锁住了表中存在的数据id=1的哪一行，同时也锁住了 (1, +∞) 这个间隙，所以事务B在T3时刻语句将被阻塞，直到事务A提交事务之前都将一直阻塞。</p>
+<p>所以插要插入的数据根本不能出现在事务A的查询语句中，也就没有可能出现幻读。</p>
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><ol>
+<li>当前读下由于有行锁和间隙锁，所以不存在幻读的情况发生。</li>
+<li>在快照读的情况下，由于事务中可能存在更新语句覆盖了其他事务中不可见的提交。导致一致性视图发生改变可以读到别的事务提交的语句内容，最终导致出现幻读。</li>
+</ol>
+<h3 id="思考🤔"><a href="#思考🤔" class="headerlink" title="思考🤔"></a>思考🤔</h3><p>mysql知识点都是细碎的，但分析问题的时候往往需要将全部的知识脉络串联起来，正如上面的这个例子，涉及到了当前读，快照读，mvcc原理，行锁和间隙锁这些问题。</p>
+<p>当我们不清楚的时候最好是实际的动手实验下，仅凭网络上的文章根本无法清楚问题的本质，甚至有些文章上的例子都是有问题的。</p>
+<p>所以学习的最好方式就是实践，真的动手尝试才能发现问题的本质。</p>
+<h2 id="相关概念"><a href="#相关概念" class="headerlink" title="相关概念"></a>相关概念</h2><p>概念来自网络，有问题望指正。</p>
+<h3 id="快照读"><a href="#快照读" class="headerlink" title="快照读"></a>快照读</h3><p>一个正常的select…语句就是快照读。<br>快照读，使得在RR（repeatable read）级别下一个普通select…语句也能做到可重复读。即利用一致性视图来做到（当前事务只能读到该事物开启以前已经提交的数据）。</p>
+<h3 id="当前读"><a href="#当前读" class="headerlink" title="当前读"></a>当前读</h3><p>insert语句、update语句、delete语句、显示加锁的select语句（select… LOCK IN SHARE MODE、select… FOR UPDATE）是当前读。</p>
+<h3 id="mvcc原理"><a href="#mvcc原理" class="headerlink" title="mvcc原理"></a>mvcc原理</h3><p>多版本并发控制（MVCC） 是实现一直性视图（consistent read view）的关键 其中主要原理如下：</p>
+<h4 id="read-view-创建时机"><a href="#read-view-创建时机" class="headerlink" title="read view 创建时机"></a>read view 创建时机</h4><p>可重复读隔离级别：这个视图是在事务启动时创建的，整个事务存在期间都用这个视图。</p>
+<p>读提交隔离级别：这个视图是在每个 SQL 语句开始执行的时候创建的。</p>
+<blockquote>
+<p>需要注意的是，“读未提交”隔离级别下直接返回记录上的最新值，没有视图概念；而“串行<br>化”隔离级别下直接用加锁的方式来避免并行访问。</p>
+</blockquote>
+<h4 id="read-view-的主要内容"><a href="#read-view-的主要内容" class="headerlink" title="read view 的主要内容"></a>read view 的主要内容</h4><p>ReadView所解决的问题是使用READ COMMITTED和REPEATABLE READ隔离级别的事务中，不能读到未提交的记录。通过判断一下版本链中的哪个版本是当前事务可见的。</p>
+<p>ReadView中主要包含4个比较重要的内容：</p>
+<ol>
+<li>m_ids：表示在生成ReadView时当前系统中活跃的读写事务的事务id列表。</li>
+<li>min_trx_id：表示在生成ReadView时当前系统中活跃的读写事务中最小的事务id，也就是m_ids中的最小值。</li>
+<li>max_trx_id：表示生成ReadView时系统中应该分配给下一个事务的id值。</li>
+<li>creator_trx_id：表示生成该ReadView的事务的事务id。</li>
+</ol>
+<p>InnoDB 为每个事务构造了一个数组，用来保存这个事务启动瞬间，当前正在“活跃”的所有事务 ID。</p>
+<blockquote>
+<p>“活跃”指的就是，启动了但还没提交。</p>
+</blockquote>
+<p>数组里面事务 ID 的最小值记为低水位，当前系统里面已经创建过的事务 ID 的最大值加 1记为高水位。这个视图数组和高水位，就组成了当前事务的一致性视图(图-1)</p>
+<p><img src="/img/mysql/read_view.png" srcset="/img/loading.gif" lazyload alt="图-1"></p>
+<h4 id="如何工作"><a href="#如何工作" class="headerlink" title="如何工作"></a>如何工作</h4><p>按照下边的步骤判断记录的某个版本是否可见：</p>
+<p>如果被访问版本的trx_id属性值与ReadView中的creator_trx_id值相同，意味着当前事务在访问它自己修改过的记录，所以该版本可以被当前事务访问。<br>如果被访问版本的trx_id属性值小于ReadView中的min_trx_id值，表明生成该版本的事务在当前事务生成ReadView前已经提交，所以该版本可以被当前事务访问。<br>如果被访问版本的trx_id属性值大于ReadView中的max_trx_id值，表明生成该版本的事务在当前事务生成ReadView后才开启，所以该版本不可以被当前事务访问。<br>如果被访问版本的trx_id属性值在ReadView的min_trx_id和max_trx_id之间，那就需要判断一下trx_id属性值是不是在m_ids列表中，如果在，说明创建ReadView时生成该版本的事务还是活跃的，该版本不可以被访问；如果不在，说明创建ReadView时生成该版本的事务已经被提交，该版本可以被访问。</p>
+<h3 id="next-key-lock"><a href="#next-key-lock" class="headerlink" title="next-key lock"></a>next-key lock</h3><p>行锁和间隙锁合称next-key lock。Next-Key Lock 只发生在 RR（REPEATABLE-READ） 隔离级别下。</p>
+<p>简单来讲是就是说枷锁的时候不单单加在满足条件的行上，同时也要加在不存在数据且满足条件的间隙上。由于不同版本的mysql对枷锁的规则上会有不同，这里不做展开。</p>
+<h2 id="Refrence"><a href="#Refrence" class="headerlink" title="Refrence"></a>Refrence</h2><p><a target="_blank" rel="noopener" href="https://time.geekbang.org/column/intro/100020801?tab=catalog">MySQL实战45讲</a><br><a target="_blank" rel="noopener" href="https://juejin.cn/post/6844903908146413576">一篇文章带你掌握mysql的一致性视图（MVCC）</a><br><a target="_blank" rel="noopener" href="https://dev.mysql.com/doc/refman/5.7/en/innodb-transaction-isolation-levels.html">MySQL官方文档</a><br><a target="_blank" rel="noopener" href="https://www.jianshu.com/p/42e60848b3a6">什么是间隙锁？到底锁了什么？</a></p>
+
+            </div>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                  <div class="post-meta mr-3">
+                    <i class="iconfont icon-category"></i>
+                    
+                      <a class="hover-with-bg" href="/categories/%E5%AD%98%E5%82%A8/">存储</a>
+                    
+                  </div>
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tags/MySQL/">MySQL</a>
+                    
+                      <a class="hover-with-bg" href="/tags/MVCC/">MVCC</a>
+                    
+                      <a class="hover-with-bg" href="/tags/lock/">lock</a>
+                    
+                      <a class="hover-with-bg" href="/tags/RR/">RR</a>
+                    
+                  </div>
+                
+              </div>
+              
+                <p class="note note-warning">
+                  
+                    本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-SA 4.0 协议</a> ，转载请注明出处！
+                  
+                </p>
+              
+              
+                <div class="post-prevnext">
+                  <article class="post-prev col-6">
+                    
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2021/10/06/golang%E8%BF%90%E8%A1%8C%E6%97%B6%E6%A0%B8%E5%BF%83%E8%B0%83%E5%BA%A6%E5%87%BD%E6%95%B0-schedule%EF%BC%8Cfindrunnable%EF%BC%8Csysmon-%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/">
+                        <span class="hidden-mobile">golang运行时核心调度函数(schedule，findrunnable，sysmon)源码分析</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+              <!-- Comments -->
+              <article class="comments" id="comments" lazyload>
+                
+                  
+                
+                
+  <div id="gitalk-container"></div>
+  <script type="text/javascript">
+    Fluid.utils.loadComments('#gitalk-container', function() {
+      Fluid.utils.createCssLink('/css/gitalk.css')
+      Fluid.utils.createScript('https://cdn.jsdelivr.net/npm/gitalk@1.7.2/dist/gitalk.min.js', function() {
+        var options = Object.assign(
+          {"clientID":"049451ff5642182111cb","clientSecret":"1fe5374f3cf7671cc68ac7d36b13069cefc122a8","repo":"blog-comment","owner":"dogslee","admin":["dogslee"],"language":"zh-CN","labels":["Gitalk"],"perPage":5,"pagerDirection":"last","distractionFreeMode":false,"createIssueManually":true,"proxy":"https://cors-anywhere.azm.workers.dev/https://github.com/login/oauth/access_token"},
+          {
+            id: 'ac9694efd6d69d3b35b6b5f6b39df1df'
+          }
+        )
+        var gitalk = new Gitalk(options);
+        gitalk.render('gitalk-container');
+      });
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the comments</noscript>
+
+
+              </article>
+            
+          </article>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+
+    
+      <a id="scroll-top-button" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+
+    
+  </main>
+
+  <footer class="text-center mt-5 py-3">
+  <div class="footer-content">
+     <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Blog Theme</span></a> 
+  </div>
+  
+
+  
+  <!-- 备案信息 -->
+  <div class="beian">
+    <span>
+      <a href="http://beian.miit.gov.cn/" target="_blank" rel="nofollow noopener">
+        粤ICP备2021123090号
+      </a>
+    </span>
+    
+      
+        <span>
+          <a
+            href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=44030302002027"
+            rel="nofollow noopener"
+            class="beian-police"
+            target="_blank"
+          >
+            
+              <span style="visibility: hidden; width: 0">|</span>
+              <img src="/img/police_beian.png" srcset="/img/loading.gif" lazyload alt="police-icon"/>
+            
+            <span>粤公网安备44030302002027号</span>
+          </a>
+        </span>
+      
+    
+  </div>
+
+
+  
+</footer>
+
+
+  <!-- SCRIPTS -->
+  
+  <script  src="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+<!-- Plugins -->
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+  
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/tocbot@4.12.3/dist/tocbot.min.js" ></script>
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js" ></script>
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/anchor-js@4.3.1/anchor.min.js" ></script>
+
+
+
+  <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2.0.8/dist/clipboard.min.js" ></script>
+
+
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/typed.js@2.0.12/lib/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var title = document.getElementById('subtitle').title;
+      
+      typing(title)
+      
+    })(window, document);
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+    <!-- Google Analytics -->
+    <script defer>
+      window.ga = window.ga || function () { (ga.q = ga.q || []).push(arguments) };
+      ga.l = +new Date;
+      ga('create', '283901737', 'auto');
+      ga('send', 'pageview');
+    </script>
+    <script async src='https://www.google-analytics.com/analytics.js'></script>
+  
+
+  
+    <!-- Google gtag.js -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-GZMLV0NWJN"></script>
+    <script defer>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-GZMLV0NWJN');
+    </script>
+  
+
+  
+
+  
+
+  
+
+
+
+
+
+<!-- 主题的启动项 保持在最底部 -->
+<script  src="/js/boot.js" ></script>
+
+
+</body>
+</html>
