@@ -18,9 +18,25 @@
   <meta name="author" content="John Doe">
   <meta name="keywords" content="">
   
-  <title>分类 - dogslee</title>
+  <title>老生长谈:进程间通信 - dogslee</title>
 
   <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@4.0.0/github-markdown.min.css" />
+  <link  rel="stylesheet" href="/lib/hint/hint.min.css" />
+
+  
+    
+    
+      
+      <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@10.7.2/styles/atom-one-dark.min.css" />
+    
+  
+
+  
+    <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css" />
+  
 
 
 
@@ -48,7 +64,7 @@
 
 
 <body>
-  <header style="height: 60vh;">
+  <header style="height: 70vh;">
     <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
   <div class="container">
     <a class="navbar-brand"
@@ -215,9 +231,46 @@
       <div class="full-bg-img">
         <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
           <div class="page-header text-center fade-in-up">
-            <span class="h2" id="subtitle" title="分类">
+            <span class="h2" id="subtitle" title="老生长谈:进程间通信">
               
             </span>
+
+            
+              <div class="mt-3">
+  
+  
+    <span class="post-meta">
+      <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+      <time datetime="2021-12-17 15:56" pubdate>
+        2021年12月17日 下午
+      </time>
+    </span>
+  
+</div>
+
+<div class="mt-1">
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      1.1k 字
+    </span>
+  
+
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-clock-fill"></i>
+      
+      
+      11
+       分钟
+    </span>
+  
+
+  
+  
+</div>
 
             
           </div>
@@ -230,205 +283,176 @@
 
   <main>
     
-      <div class="container nopadding-x-md">
-        <div class="py-5" id="board"
-          >
-          
-          <div class="container">
-            <div class="row">
-              <div class="col-12 col-md-10 m-auto">
-                
+      
 
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">老生长谈:进程间通信</h1>
+            
+            <div class="markdown-body">
+              <blockquote>
+<p>进程间通信方式真可谓老生长谈了， 但是进程间通信都有哪些，又都在哪应用呢？  好吧 不多哔哔，为自己科普起来</p>
+</blockquote>
+<h2 id="1-无名管道通信"><a href="#1-无名管道通信" class="headerlink" title="1 无名管道通信"></a>1 无名管道通信</h2><div class="hljs code-wrapper"><pre><code>Pipe
 
+管道是 UNIX 系统 IPC 的最古老的形式，所有的 UNIX 系统都提供管道机制，如果你使用过 shell 中的管道，应该不会默认，例如
 
+<figure class="highlight bash"><table><tr><td class="gutter hljs"><pre><span class="line">1</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs bash">ps -aux | grep <span class="hljs-string">&quot;xxx&quot;</span><br></code></pre></div></td></tr></table></figure>
 
+这个意思是将 ps -aux 的输出作为 grep xxx 的输入，通过管道可以将两个进程连接起来，功能非常强大，但是有名管道与 shell 的管道有些区别。
+</code></pre>
+<h2 id="2有名管道通信"><a href="#2有名管道通信" class="headerlink" title="2有名管道通信"></a>2有名管道通信</h2><div class="hljs code-wrapper"><pre><code>Fifo
+</code></pre></div>
+<p> 命名管道(named pipe)又被称为先进先出队列(FIFO)，是一种特殊的管道，存在于文件系统中。命名管道与管道非常类似，但是又有自身的显著特征：</p>
+<p>命名管道可以用于任何两个进程间的通信，而不限于同源的两个进程。<br>命名管道作为一种特殊的文件存放在文件系统中，而不是像管道那样存放在内核中。当进程对命名管道的使用结束后，命名管道依然存在于文件系统中，除非对其进行删除操作，否则该命名管道不会自行消失。<br>和管道一样，命名管道也只能用于数据的单向传输，如果要用命名管道实现两个进程间数据的双向传输，建议使用两个单向的命名管道。</p>
+<h2 id="3信号通信"><a href="#3信号通信" class="headerlink" title="3信号通信"></a>3信号通信</h2><div class="hljs code-wrapper"><pre><code>Signal
 
+信号（Signals）是Unix、类Unix以及其他POSIX兼容的操作系统中进程间通讯的一种有限制的方式。
 
+它是一种异步的通知机制，用来提醒进程一个事件已经发生。当一个信号发送给一个进程，
 
-<div class="category-list">
-  
-  
-  
-  
-    
-    
-    <div class="category row">
-      <a
-        class="category-item collapsed list-group-item category-item-action col-10 col-md-11"
-        id="heading-a39cf1ca12a97140547dc54624e4bd6f" role="tab" data-toggle="collapse" href="#collapse-a39cf1ca12a97140547dc54624e4bd6f"
-        aria-expanded="false"
-      >
-        存储
-        <i class="iconfont icon-arrowright"></i>
-      </a>
-      <a href="/categories/%E5%AD%98%E5%82%A8/" class="category-count col-2 col-md-1">
-        <i class="iconfont icon-articles"></i>
-        <span>4</span>
-      </a>
-      <div class="category-collapse">
-        
-        
-          
-  <div id="collapse-a39cf1ca12a97140547dc54624e4bd6f" class="collapse in" role="tabpanel"
-       aria-labelledby="heading-a39cf1ca12a97140547dc54624e4bd6f">
-    
-    
-      
-      
-        <a href="/2021/11/10/MySQL%E5%9C%A8%E5%8F%AF%E9%87%8D%E5%A4%8D%E8%AF%BB%E7%9A%84%E9%9A%94%E7%A6%BB%E7%BA%A7%E5%88%AB%E4%B8%8B%E5%88%B0%E5%BA%95%E8%A7%A3%E8%A7%A3%E5%86%B3%E4%BA%86%E5%B9%BB%E8%AF%BB%E7%9A%84%E9%97%AE%E9%A2%98%E6%B2%A1%E6%9C%89/" class="list-group-item list-group-item-action">
-          <span class="category-post">MySQL在可重复读的隔离级别下到底解解决了幻读的问题没有?</span>
-        </a>
-      
-    
-      
-      
-        <a href="/2021/09/03/%E4%B8%80%E8%87%B4%E6%80%A7%E5%93%88%E5%B8%8C%E7%AE%97%E6%B3%95%E4%BB%A5%E5%8F%8AGo%E5%AE%9E%E7%8E%B0/" class="list-group-item list-group-item-action">
-          <span class="category-post">一致性哈希算法以及Go实现</span>
-        </a>
-      
-    
-      
-      
-        <a href="/2021/08/25/%E8%AE%BE%E7%BD%AEMySQL%E7%9A%84%E9%9A%94%E7%A6%BB%E7%BA%A7%E5%88%AB/" class="list-group-item list-group-item-action">
-          <span class="category-post">设置MySQL的隔离级别</span>
-        </a>
-      
-    
-      
-      
-        <a href="/2021/08/23/docker-compose%E6%90%AD%E5%BB%BAMySql%E4%B8%BB%E4%BB%8E%E5%92%8C%E5%8F%8C%E4%B8%BB/" class="list-group-item list-group-item-action">
-          <span class="category-post">docker-compose搭建MySql主从和双主</span>
-        </a>
-      
-    
-  </div>
+操作系统中断了进程正常的控制流程，此时，任何非原子操作都将被中断。
 
-        
-      </div>
-    </div>
-  
-    
-    
-    <div class="category row">
-      <a
-        class="category-item collapsed list-group-item category-item-action col-10 col-md-11"
-        id="heading-21cc28409729565fc1a4d2dd92db269f" role="tab" data-toggle="collapse" href="#collapse-21cc28409729565fc1a4d2dd92db269f"
-        aria-expanded="false"
-      >
-        golang
-        <i class="iconfont icon-arrowright"></i>
-      </a>
-      <a href="/categories/golang/" class="category-count col-2 col-md-1">
-        <i class="iconfont icon-articles"></i>
-        <span>2</span>
-      </a>
-      <div class="category-collapse">
-        
-        
-          
-  <div id="collapse-21cc28409729565fc1a4d2dd92db269f" class="collapse in" role="tabpanel"
-       aria-labelledby="heading-21cc28409729565fc1a4d2dd92db269f">
-    
-    
-      
-      
-        <a href="/2021/10/06/golang%E8%BF%90%E8%A1%8C%E6%97%B6%E6%A0%B8%E5%BF%83%E8%B0%83%E5%BA%A6%E5%87%BD%E6%95%B0-schedule%EF%BC%8Cfindrunnable%EF%BC%8Csysmon-%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/" class="list-group-item list-group-item-action">
-          <span class="category-post">golang运行时核心调度函数(schedule，findrunnable，sysmon)源码分析</span>
-        </a>
-      
-    
-      
-      
-        <a href="/2021/10/06/golang%E8%BF%90%E8%A1%8C%E6%97%B6%E9%98%9F%E5%88%97%E6%93%8D%E4%BD%9C%E5%87%BD%E6%95%B0%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/" class="list-group-item list-group-item-action">
-          <span class="category-post">golang运行时队列操作函数源码分析</span>
-        </a>
-      
-    
-  </div>
+如果进程定义了信号的处理函数，那么它将被执行，否则就执行默认的处理函数。
 
-        
-      </div>
-    </div>
-  
-    
-    
-    <div class="category row">
-      <a
-        class="category-item collapsed list-group-item category-item-action col-10 col-md-11"
-        id="heading-0eaa6af97d68cc910c54feed58ad05dd" role="tab" data-toggle="collapse" href="#collapse-0eaa6af97d68cc910c54feed58ad05dd"
-        aria-expanded="false"
-      >
-        架构
-        <i class="iconfont icon-arrowright"></i>
-      </a>
-      <a href="/categories/%E6%9E%B6%E6%9E%84/" class="category-count col-2 col-md-1">
-        <i class="iconfont icon-articles"></i>
-        <span>1</span>
-      </a>
-      <div class="category-collapse">
-        
-        
-          
-  <div id="collapse-0eaa6af97d68cc910c54feed58ad05dd" class="collapse in" role="tabpanel"
-       aria-labelledby="heading-0eaa6af97d68cc910c54feed58ad05dd">
-    
-    
-      
-      
-        <a href="/2021/08/18/%E5%BE%AE%E6%9C%8D%E5%8A%A1%E6%A6%82%E8%BF%B0/" class="list-group-item list-group-item-action">
-          <span class="category-post">微服务概述</span>
-        </a>
-      
-    
-  </div>
+信号是进程间通信机制中唯一的异步通信机制，可以看作是异步通知，通知接收信号的进程有哪些事情发生了。也可以简单理解为信号是某种形式上的软中断。
 
-        
-      </div>
-    </div>
-  
-    
-    
-    <div class="category row">
-      <a
-        class="category-item collapsed list-group-item category-item-action col-10 col-md-11"
-        id="heading-f88522cf1b8a99e869ee231ac97bbc86" role="tab" data-toggle="collapse" href="#collapse-f88522cf1b8a99e869ee231ac97bbc86"
-        aria-expanded="false"
-      >
-        进程
-        <i class="iconfont icon-arrowright"></i>
-      </a>
-      <a href="/categories/%E8%BF%9B%E7%A8%8B/" class="category-count col-2 col-md-1">
-        <i class="iconfont icon-articles"></i>
-        <span>1</span>
-      </a>
-      <div class="category-collapse">
-        
-        
-          
-  <div id="collapse-f88522cf1b8a99e869ee231ac97bbc86" class="collapse in" role="tabpanel"
-       aria-labelledby="heading-f88522cf1b8a99e869ee231ac97bbc86">
-    
-    
-      
-      
-        <a href="/2021/12/17/%E8%80%81%E7%94%9F%E9%95%BF%E8%B0%88-%E8%BF%9B%E7%A8%8B%E9%97%B4%E9%80%9A%E4%BF%A1/" class="list-group-item list-group-item-action">
-          <span class="category-post">老生长谈:进程间通信</span>
-        </a>
-      
-    
-  </div>
+&gt;  例如：kill 命令发出
+</code></pre></div>
+<h2 id="4消息队列通信"><a href="#4消息队列通信" class="headerlink" title="4消息队列通信"></a>4消息队列通信</h2><div class="hljs code-wrapper"><pre><code>Message Queue
 
-        
-      </div>
-    </div>
-  
-</div>
+消息队列提供了一种从一个进程向另一个进程发送一个数据块的方法。  
 
-              </div>
+每个数据块都被认为含有一个类型，接收进程可以独立地接收含有不同类型的数据结构。
+
+我们可以通过发送消息来避免命名管道的同步和阻塞问题。
+
+但是消息队列与命名管道一样，每个数据块都有一个最大长度的限制。
+</code></pre></div>
+<h2 id="5信号量通信"><a href="#5信号量通信" class="headerlink" title="5信号量通信"></a>5信号量通信</h2><div class="hljs code-wrapper"><pre><code>Semphone
+
+简单说一下信号量的工作机制（因为真的很简单），可以直接理解成计数器（当然其实加锁的时候肯定不能这么简单，不只只是信号量了 )
+
+信号量会有初值（&gt;0），每当有进程申请使用信号量，通过一个P操作来对信号量进行-1操作，
+
+当计数器减到0的时候就说明没有资源了，其他进程要想访问就必须等待（具体怎么等还有说法，比如忙等待或者睡眠），
+
+当该进程执行完这段工作（我们称之为临界区）之后，就会执行V操作来对信号量进行+1操作。
+</code></pre></div>
+<h2 id="6共享内存通信"><a href="#6共享内存通信" class="headerlink" title="6共享内存通信"></a>6共享内存通信</h2><div class="hljs code-wrapper"><pre><code>Share Memory 
+
+共享内存，顾名思义，就是两个或多个进程都可以访问的同一块内存空间，一个进程对这块空间内容的修改可为其他参与通信的进程所看到的。
+
+显然，为了达到这个目的，就需要做两件事：一件是在内存划出一块区域来作为共享区；另一件是把这个区域映射到参与通信的各个进程空间。
+
+通常在内存划出一个区域的方法是，在内存中打开一个文件，若通过系统调用mmap()把这个文件所占用的内存空间映射到参与通信的各个进程地址空间，则这些进程就都可以看到这个共享区域，进而实现进程间的通信。
+</code></pre></div>
+<h2 id="7套接字通信"><a href="#7套接字通信" class="headerlink" title="7套接字通信"></a>7套接字通信</h2><div class="hljs code-wrapper"><pre><code>Socket 
+
+这个不必多说。。。
+</code></pre></div>
+
             </div>
-          </div>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                  <div class="post-meta mr-3">
+                    <i class="iconfont icon-category"></i>
+                    
+                      <a class="hover-with-bg" href="/categories/%E8%BF%9B%E7%A8%8B/">进程</a>
+                    
+                  </div>
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tags/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/">操作系统</a>
+                    
+                  </div>
+                
+              </div>
+              
+                <p class="note note-warning">
+                  
+                    本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-SA 4.0 协议</a> ，转载请注明出处！
+                  
+                </p>
+              
+              
+                <div class="post-prevnext">
+                  <article class="post-prev col-6">
+                    
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2021/11/10/MySQL%E5%9C%A8%E5%8F%AF%E9%87%8D%E5%A4%8D%E8%AF%BB%E7%9A%84%E9%9A%94%E7%A6%BB%E7%BA%A7%E5%88%AB%E4%B8%8B%E5%88%B0%E5%BA%95%E8%A7%A3%E8%A7%A3%E5%86%B3%E4%BA%86%E5%B9%BB%E8%AF%BB%E7%9A%84%E9%97%AE%E9%A2%98%E6%B2%A1%E6%9C%89/">
+                        <span class="hidden-mobile">MySQL在可重复读的隔离级别下到底解解决了幻读的问题没有?</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+              <!-- Comments -->
+              <article class="comments" id="comments" lazyload>
+                
+                  
+                
+                
+  <div id="gitalk-container"></div>
+  <script type="text/javascript">
+    Fluid.utils.loadComments('#gitalk-container', function() {
+      Fluid.utils.createCssLink('/css/gitalk.css')
+      Fluid.utils.createScript('https://cdn.jsdelivr.net/npm/gitalk@1.7.2/dist/gitalk.min.js', function() {
+        var options = Object.assign(
+          {"clientID":"049451ff5642182111cb","clientSecret":"1fe5374f3cf7671cc68ac7d36b13069cefc122a8","repo":"blog-comment","owner":"dogslee","admin":["dogslee"],"language":"zh-CN","labels":["Gitalk"],"perPage":5,"pagerDirection":"last","distractionFreeMode":false,"createIssueManually":true,"proxy":"https://cors-anywhere.azm.workers.dev/https://github.com/login/oauth/access_token"},
+          {
+            id: '51c71215b5b7e7d01683f647aedea636'
+          }
+        )
+        var gitalk = new Gitalk(options);
+        gitalk.render('gitalk-container');
+      });
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the comments</noscript>
+
+
+              </article>
+            
+          </article>
         </div>
       </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
     
 
     
@@ -535,9 +559,15 @@
 
 
 
+  <script  src="https://cdn.jsdelivr.net/npm/tocbot@4.12.3/dist/tocbot.min.js" ></script>
 
 
 
+  <script  src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js" ></script>
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/anchor-js@4.3.1/anchor.min.js" ></script>
 
 
 
