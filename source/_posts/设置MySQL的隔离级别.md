@@ -78,4 +78,3 @@ SQL标准定义了4类隔离级别，包括了一些具体规则，用来限定�
 | Read Committed    | N     | Y        | Y     |
 | Repeatable Read   | N     | N        | Y     |
 | Serializable      | N     | N        | N     |
-
