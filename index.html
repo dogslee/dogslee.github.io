@@ -248,6 +248,70 @@
     
     
       <div class="col-12 col-md-4 m-auto index-img">
+        <a href="/2022/02/14/%E6%B5%85%E8%B0%88go%20defer%20%E6%89%A7%E8%A1%8C%E8%BF%87%E7%A8%8B/" target="_self">
+          <img src="/img/golang/go.jpg" srcset="/img/loading.gif" lazyload alt="浅谈go defer 执行过程">
+        </a>
+      </div>
+    
+    <article class="col-12 col-md-8 mx-auto index-info">
+      <h1 class="index-header">
+        
+        <a href="/2022/02/14/%E6%B5%85%E8%B0%88go%20defer%20%E6%89%A7%E8%A1%8C%E8%BF%87%E7%A8%8B/" target="_self">
+          浅谈go defer 执行过程
+        </a>
+      </h1>
+
+      <p class="index-excerpt">
+        <a href="/2022/02/14/%E6%B5%85%E8%B0%88go%20defer%20%E6%89%A7%E8%A1%8C%E8%BF%87%E7%A8%8B/" target="_self">
+          
+          
+            
+          
+          defer 一般用途
+关闭文件句柄
+释放锁
+释放资源
+
+go 语言的defer功能强大，对于资源管理非常方便，但是如果没用好，也会有陷阱。
+defer 执行流程defer 是先进后出的数据结构，如果有多个defer表达式，调用顺序类似于栈，越后面的defer表达式越先被调用。
+不过如果对defer的了解不够深入，使用起来可能会踩到一些坑，尤其是跟带命名的返回参数一起使用时。
+defer是在retu
+        </a>
+      </p>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2022-02-14 21:30" pubdate>
+              2022-02-14
+            </time>
+          </div>
+        
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-category"></i>
+            
+              <a href="/categories/golang/">golang</a>
+            
+          </div>
+        
+        
+          <div class="post-meta">
+            <i class="iconfont icon-tags"></i>
+            
+              <a href="/tags/golang/">golang</a>
+            
+          </div>
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+      <div class="col-12 col-md-4 m-auto index-img">
         <a href="/2021/12/17/%E8%80%81%E7%94%9F%E9%95%BF%E8%B0%88-%E8%BF%9B%E7%A8%8B%E9%97%B4%E9%80%9A%E4%BF%A1/" target="_self">
           <img src="/img/abg/process-tx.jpg" srcset="/img/loading.gif" lazyload alt="老生长谈:进程间通信">
         </a>
