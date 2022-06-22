@@ -54,7 +54,7 @@ INSERT INTO `test` VALUES ('1', 'bob', '18', '1');
 | ---    | ---     | ---      |
 | T1 | begin; |          |
 | T2 | select * from test where id >= 1;  | begin; |
-| T3 |          | insert into test(id, name, age, sex) values(2, 'lisa', 18, 0); |
+| T3 |          | insert into test(id, name, age, sex) values(2, 'lisa', 18, 0);|
 | T4 |          | commit; |
 | T5 | update test set age = 19 where id >=1; |           |
 | T6 | select * from test where id >= 1; |           |
@@ -110,7 +110,7 @@ mysql> select * from test where id >= 1;
 | ---    | ---     | ---      |
 | T1 | begin; |          |
 | T2 | select * from test where id >= 1 for update ;  | begin; |
-| T3 |          | insert into test(id, name, age, sex) values(2, 'lisa', 18, 0); ***(blocking)*** |
+| T3 |          | insert into test(id, name, age, sex) values(2, 'lisa', 18, 0);***(blocking)***|
 | T4 | update test set age = 19 where id >=1; |           |
 | T5 | select * from test where id >= 1 for update; |           |
 | T6 | commit; |       |
